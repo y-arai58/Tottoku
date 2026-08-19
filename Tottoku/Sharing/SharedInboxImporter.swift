@@ -1,11 +1,13 @@
 import Foundation
+import LinkPresentation
 import SwiftData
 
 @MainActor
 enum SharedInboxImporter {
-    static func importPendingShares(into modelContext: ModelContext) -> Int {
+    static func importPendingShares(into modelContext: ModelContext) async -> Int {
         guard let shares = try? SharedInbox.pendingShares() else { return 0 }
         var importedCount = 0
+        var importedItems: [SavedItem] = []
 
         for share in shares {
             let descriptor = FetchDescriptor<SavedItem>(predicate: #Predicate { $0.id == share.id })
@@ -14,14 +16,20 @@ enum SharedInboxImporter {
                 continue
             }
 
-            modelContext.insert(savedItem(from: share))
+            let item = savedItem(from: share)
+            modelContext.insert(item)
             do {
                 try modelContext.save()
                 try SharedInbox.remove(share)
                 importedCount += 1
+                importedItems.append(item)
             } catch {
                 modelContext.rollback()
             }
+        }
+
+        for item in importedItems {
+            await fetchLinkTitleIfNeeded(for: item, in: modelContext)
         }
 
         return importedCount
@@ -40,6 +48,9 @@ enum SharedInboxImporter {
     }
 
     private static func title(for share: IncomingShare, urlString: String) -> String {
+        if let title = share.title?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty {
+            return String(title.prefix(80))
+        }
         if let firstLine = share.text
             .split(whereSeparator: \.isNewline)
             .map({ $0.trimmingCharacters(in: .whitespacesAndNewlines) })
@@ -50,5 +61,29 @@ enum SharedInboxImporter {
             return host
         }
         return "共有した投稿"
+    }
+
+    private static func fetchLinkTitleIfNeeded(for item: SavedItem, in modelContext: ModelContext) async {
+        guard item.bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              let url = URL(string: item.urlString),
+              isPlaceholderTitle(item.title, for: url) else {
+            return
+        }
+
+        guard #available(iOS 26.4, *),
+              let metadata = try? await LinkMetadata(
+                fetching: url,
+                timeout: .seconds(6),
+                includeSubresources: false
+              ),
+              let title = metadata.title?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !title.isEmpty else { return }
+
+        item.title = String(title.prefix(120))
+        try? modelContext.save()
+    }
+
+    private static func isPlaceholderTitle(_ title: String, for url: URL) -> Bool {
+        title == url.host || title == "共有した投稿"
     }
 }

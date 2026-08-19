@@ -27,6 +27,7 @@ private struct RootView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Query(sort: \Category.order) private var categories: [Category]
+    @State private var isImportingSharedPosts = false
 
     var body: some View {
         TabView {
@@ -39,11 +40,18 @@ private struct RootView: View {
         .tint(.indigo)
         .task {
             CategorySeed.insertIfNeeded(into: modelContext, categories: categories)
-            _ = SharedInboxImporter.importPendingShares(into: modelContext)
+            await importSharedPosts()
         }
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
-            _ = SharedInboxImporter.importPendingShares(into: modelContext)
+            Task { await importSharedPosts() }
         }
+    }
+
+    private func importSharedPosts() async {
+        guard !isImportingSharedPosts else { return }
+        isImportingSharedPosts = true
+        defer { isImportingSharedPosts = false }
+        _ = await SharedInboxImporter.importPendingShares(into: modelContext)
     }
 }
