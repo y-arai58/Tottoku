@@ -105,37 +105,35 @@ private struct SavedItemCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
-            ZStack(alignment: .bottomLeading) {
-                LinearGradient(colors: sourceColors, startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .frame(height: 154)
-                if let url = URL(string: item.thumbnailURLString ?? "") {
-                    AsyncImage(url: url) { image in
-                        image.resizable().scaledToFill()
-                    } placeholder: {
-                        ProgressView().tint(.white)
+            GeometryReader { proxy in
+                ZStack(alignment: .bottomLeading) {
+                    LinearGradient(colors: sourceColors, startPoint: .topLeading, endPoint: .bottomTrailing)
+                    if let url = URL(string: item.thumbnailURLString ?? "") {
+                        AsyncImage(url: url) { image in
+                            image.resizable().scaledToFill()
+                        } placeholder: {
+                            ProgressView().tint(.white)
+                        }
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .clipped()
+                    } else {
+                        Image(systemName: item.source.symbolName)
+                            .font(.system(size: 42, weight: .light))
+                            .foregroundStyle(.white.opacity(0.85))
                     }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 154)
-                    .clipped()
-                } else {
-                    Image(systemName: item.source.symbolName)
-                        .font(.system(size: 42, weight: .light))
-                        .foregroundStyle(.white.opacity(0.85))
+                    if item.thumbnailURLString != nil {
+                        LinearGradient(colors: [.clear, .black.opacity(0.32)], startPoint: .center, endPoint: .bottom)
+                    }
+                    Text(item.source.displayName)
+                        .font(.caption2.weight(.semibold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 5)
+                        .background(.ultraThinMaterial, in: Capsule())
+                        .padding(10)
                 }
-                if item.thumbnailURLString != nil {
-                    LinearGradient(colors: [.clear, .black.opacity(0.32)], startPoint: .center, endPoint: .bottom)
-                        .frame(height: 154)
-                }
-                Text(item.source.displayName)
-                    .font(.caption2.weight(.semibold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(.ultraThinMaterial, in: Capsule())
-                    .padding(10)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 154)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .aspectRatio(1, contentMode: .fit)
 
             Text(item.summary.isEmpty ? item.title : item.summary)
                 .font(.subheadline.weight(.semibold))
