@@ -114,7 +114,9 @@ private struct SavedItemCard: View {
                     } placeholder: {
                         ProgressView().tint(.white)
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 154)
+                    .clipped()
                 } else {
                     Image(systemName: item.source.symbolName)
                         .font(.system(size: 42, weight: .light))
@@ -122,6 +124,7 @@ private struct SavedItemCard: View {
                 }
                 if item.thumbnailURLString != nil {
                     LinearGradient(colors: [.clear, .black.opacity(0.32)], startPoint: .center, endPoint: .bottom)
+                        .frame(height: 154)
                 }
                 Text(item.source.displayName)
                     .font(.caption2.weight(.semibold))
@@ -130,12 +133,15 @@ private struct SavedItemCard: View {
                     .background(.ultraThinMaterial, in: Capsule())
                     .padding(10)
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 154)
             .clipShape(RoundedRectangle(cornerRadius: 16))
 
             Text(item.summary.isEmpty ? item.title : item.summary)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.primary)
-                .lineLimit(2)
+                .lineLimit(2, reservesSpace: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
             Text(item.categoryName)
                 .font(.caption)
                 .foregroundStyle(.secondary)
