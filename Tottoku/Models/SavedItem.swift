@@ -68,6 +68,7 @@ final class SavedItem {
     var summary: String
     var categoryName: String
     var tagNames: [String]
+    var thumbnailURLString: String?
     var createdAt: Date
     var classificationStateRawValue: String
 
@@ -81,6 +82,7 @@ final class SavedItem {
         summary: String = "",
         categoryName: String = "その他",
         tagNames: [String] = [],
+        thumbnailURLString: String? = nil,
         createdAt: Date = .now,
         classificationState: ClassificationState = .pending
     ) {
@@ -93,6 +95,7 @@ final class SavedItem {
         self.summary = summary
         self.categoryName = categoryName
         self.tagNames = tagNames
+        self.thumbnailURLString = thumbnailURLString
         self.createdAt = createdAt
         self.classificationStateRawValue = classificationState.rawValue
     }

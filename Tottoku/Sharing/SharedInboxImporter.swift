@@ -30,7 +30,7 @@ enum SharedInboxImporter {
         }
 
         for item in importedItems {
-            await fetchLinkTitleIfNeeded(for: item, in: modelContext)
+            await fetchLinkMetadataIfNeeded(for: item, in: modelContext)
         }
 
         return importedCount
@@ -40,11 +40,16 @@ enum SharedInboxImporter {
         guard let items = try? modelContext.fetch(FetchDescriptor<SavedItem>()) else { return 0 }
         var updatedCount = 0
         for item in items {
-            if await fetchLinkTitleIfNeeded(for: item, in: modelContext) {
+            if await fetchLinkMetadataIfNeeded(for: item, in: modelContext) {
                 updatedCount += 1
             }
         }
         return updatedCount
+    }
+
+    @discardableResult
+    static func refreshLinkMetadata(for item: SavedItem, in modelContext: ModelContext) async -> Bool {
+        await fetchLinkMetadataIfNeeded(for: item, in: modelContext, force: true)
     }
 
     private static func savedItem(from share: IncomingShare) -> SavedItem {
@@ -76,12 +81,20 @@ enum SharedInboxImporter {
     }
 
     @discardableResult
-    private static func fetchLinkTitleIfNeeded(for item: SavedItem, in modelContext: ModelContext) async -> Bool {
-        guard item.bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              let url = URL(string: item.urlString),
-              isPlaceholderTitle(item.title, for: url) else {
+    private static func fetchLinkMetadataIfNeeded(
+        for item: SavedItem,
+        in modelContext: ModelContext,
+        force: Bool = false
+    ) async -> Bool {
+        guard let url = URL(string: item.urlString),
+              url.scheme?.lowercased() == "https" || url.scheme?.lowercased() == "http" else {
             return false
         }
+
+        let needsTitle = item.bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && isPlaceholderTitle(item.title, for: url)
+        let needsImage = item.thumbnailURLString?.isEmpty ?? true
+        guard force || needsTitle || needsImage else { return false }
 
         let systemTitle: String?
         if #available(iOS 26.4, *),
@@ -95,16 +108,23 @@ enum SharedInboxImporter {
             systemTitle = nil
         }
 
+        let preview = await OpenGraphPreviewFetcher.fetch(from: url)
         let trimmedSystemTitle = systemTitle?.trimmingCharacters(in: .whitespacesAndNewlines)
         let title = (isMeaningfulLinkTitle(trimmedSystemTitle, for: url)
             ? trimmedSystemTitle
-            : await OpenGraphTitleFetcher.fetchTitle(from: url))?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let title, !title.isEmpty else { return false }
-
-        item.title = String(title.prefix(120))
-        try? modelContext.save()
-        return true
+            : preview.title)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        var didChange = false
+        if needsTitle, let title, !title.isEmpty {
+            item.title = String(title.prefix(120))
+            didChange = true
+        }
+        if let imageURL = preview.imageURL?.absoluteString, !imageURL.isEmpty,
+           item.thumbnailURLString != imageURL {
+            item.thumbnailURLString = imageURL
+            didChange = true
+        }
+        if didChange { try? modelContext.save() }
+        return didChange
     }
 
     private static func isPlaceholderTitle(_ title: String, for url: URL) -> Bool {
@@ -117,9 +137,16 @@ enum SharedInboxImporter {
     }
 }
 
-private enum OpenGraphTitleFetcher {
-    static func fetchTitle(from url: URL) async -> String? {
-        guard let scheme = url.scheme?.lowercased(), ["http", "https"].contains(scheme) else { return nil }
+private struct OpenGraphPreview {
+    let title: String?
+    let imageURL: URL?
+}
+
+private enum OpenGraphPreviewFetcher {
+    static func fetch(from url: URL) async -> OpenGraphPreview {
+        guard let scheme = url.scheme?.lowercased(), ["http", "https"].contains(scheme) else {
+            return OpenGraphPreview(title: nil, imageURL: nil)
+        }
 
         var request = URLRequest(url: url)
         request.timeoutInterval = 8
@@ -133,11 +160,16 @@ private enum OpenGraphTitleFetcher {
               (200..<400).contains(httpResponse.statusCode),
               data.count <= 1_000_000,
               let html = String(data: data, encoding: .utf8) else {
-            return nil
+            return OpenGraphPreview(title: nil, imageURL: nil)
         }
 
-        return metaContent(named: "og:title", in: html)
+        let title = metaContent(named: "og:title", in: html)
             ?? metaContent(named: "twitter:title", in: html)
+        let imageString = metaContent(named: "og:image:secure_url", in: html)
+            ?? metaContent(named: "og:image", in: html)
+            ?? metaContent(named: "twitter:image", in: html)
+        let imageURL = imageString.flatMap { URL(string: $0, relativeTo: url)?.absoluteURL }
+        return OpenGraphPreview(title: title, imageURL: imageURL)
     }
 
     private static func metaContent(named name: String, in html: String) -> String? {

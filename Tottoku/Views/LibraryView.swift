@@ -108,11 +108,21 @@ private struct SavedItemCard: View {
             ZStack(alignment: .bottomLeading) {
                 LinearGradient(colors: sourceColors, startPoint: .topLeading, endPoint: .bottomTrailing)
                     .frame(height: 154)
-                    .overlay {
-                        Image(systemName: item.source.symbolName)
-                            .font(.system(size: 42, weight: .light))
-                            .foregroundStyle(.white.opacity(0.85))
+                if let url = URL(string: item.thumbnailURLString ?? "") {
+                    AsyncImage(url: url) { image in
+                        image.resizable().scaledToFill()
+                    } placeholder: {
+                        ProgressView().tint(.white)
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    Image(systemName: item.source.symbolName)
+                        .font(.system(size: 42, weight: .light))
+                        .foregroundStyle(.white.opacity(0.85))
+                }
+                if item.thumbnailURLString != nil {
+                    LinearGradient(colors: [.clear, .black.opacity(0.32)], startPoint: .center, endPoint: .bottom)
+                }
                 Text(item.source.displayName)
                     .font(.caption2.weight(.semibold))
                     .padding(.horizontal, 8)
@@ -144,20 +154,19 @@ private struct SavedItemCard: View {
 }
 
 private struct SavedItemDetailView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.openURL) private var openURL
     let item: SavedItem
     let categories: [Category]
     @State private var isEditing = false
+    @State private var isRefreshingMetadata = false
+    @State private var isPresentingDeleteConfirmation = false
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Image(systemName: item.source.symbolName)
-                    .font(.system(size: 62, weight: .light))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 220)
-                    .foregroundStyle(.white)
-                    .background(.indigo.gradient, in: RoundedRectangle(cornerRadius: 24))
+                preview
 
                 VStack(alignment: .leading, spacing: 10) {
                     Text(item.summary.isEmpty ? item.title : item.summary)
@@ -185,7 +194,26 @@ private struct SavedItemDetailView: View {
                         Text("メモ・投稿本文").font(.headline)
                         Text(item.bodyText).foregroundStyle(.secondary)
                     }
+                } else {
+                    ContentUnavailableView(
+                        "投稿本文は保存されていません",
+                        systemImage: "text.document",
+                        description: Text("XやInstagramが共有時にURLだけを渡す場合があります。必要なら編集からメモを追加できます。")
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
                 }
+
+                Button {
+                    Task {
+                        isRefreshingMetadata = true
+                        _ = await SharedInboxImporter.refreshLinkMetadata(for: item, in: modelContext)
+                        isRefreshingMetadata = false
+                    }
+                } label: {
+                    Label(isRefreshingMetadata ? "リンク情報を取得中…" : "リンク情報を再取得", systemImage: "arrow.clockwise")
+                }
+                .disabled(isRefreshingMetadata || item.urlString.isEmpty)
 
                 Button {
                     guard let url = URL(string: item.urlString) else { return }
@@ -201,11 +229,47 @@ private struct SavedItemDetailView: View {
         .navigationTitle("保存した投稿")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            Button("編集") { isEditing = true }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("編集") { isEditing = true }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(role: .destructive) { isPresentingDeleteConfirmation = true } label: {
+                    Image(systemName: "trash")
+                }
+            }
         }
         .sheet(isPresented: $isEditing) {
             SavedItemEditor(item: item, categories: categories)
         }
+        .confirmationDialog("この保存を削除しますか？", isPresented: $isPresentingDeleteConfirmation, titleVisibility: .visible) {
+            Button("削除", role: .destructive) {
+                modelContext.delete(item)
+                dismiss()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var preview: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 24).fill(.indigo.gradient)
+            if let url = URL(string: item.thumbnailURLString ?? "") {
+                AsyncImage(url: url) { image in
+                    image.resizable().scaledToFill()
+                } placeholder: {
+                    ProgressView().tint(.white)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
+            } else {
+                Image(systemName: item.source.symbolName)
+                    .font(.system(size: 62, weight: .light))
+                    .foregroundStyle(.white)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 220)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
     }
 }
 
