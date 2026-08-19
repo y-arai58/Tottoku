@@ -28,6 +28,7 @@ private struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Query(sort: \Category.order) private var categories: [Category]
     @State private var isImportingSharedPosts = false
+    @State private var hasRefreshedLinkTitles = false
 
     var body: some View {
         TabView {
@@ -53,6 +54,10 @@ private struct RootView: View {
         isImportingSharedPosts = true
         defer { isImportingSharedPosts = false }
         _ = await SharedInboxImporter.importPendingShares(into: modelContext)
+        if !hasRefreshedLinkTitles {
+            _ = await SharedInboxImporter.refreshPlaceholderLinkTitles(in: modelContext)
+            hasRefreshedLinkTitles = true
+        }
         let categoryNames = categories.filter { !$0.isArchived }.map(\.name)
         _ = await SavedItemClassifier.classifyPendingItems(in: modelContext, categoryNames: categoryNames)
     }

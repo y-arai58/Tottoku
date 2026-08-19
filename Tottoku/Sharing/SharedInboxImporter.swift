@@ -36,6 +36,17 @@ enum SharedInboxImporter {
         return importedCount
     }
 
+    static func refreshPlaceholderLinkTitles(in modelContext: ModelContext) async -> Int {
+        guard let items = try? modelContext.fetch(FetchDescriptor<SavedItem>()) else { return 0 }
+        var updatedCount = 0
+        for item in items {
+            if await fetchLinkTitleIfNeeded(for: item, in: modelContext) {
+                updatedCount += 1
+            }
+        }
+        return updatedCount
+    }
+
     private static func savedItem(from share: IncomingShare) -> SavedItem {
         let urlString = share.urlString ?? ""
         return SavedItem(
@@ -64,28 +75,109 @@ enum SharedInboxImporter {
         return "共有した投稿"
     }
 
-    private static func fetchLinkTitleIfNeeded(for item: SavedItem, in modelContext: ModelContext) async {
+    @discardableResult
+    private static func fetchLinkTitleIfNeeded(for item: SavedItem, in modelContext: ModelContext) async -> Bool {
         guard item.bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               let url = URL(string: item.urlString),
               isPlaceholderTitle(item.title, for: url) else {
-            return
+            return false
         }
 
-        guard #available(iOS 26.4, *),
-              let metadata = try? await LinkMetadata(
-                fetching: url,
-                timeout: .seconds(6),
-                includeSubresources: false
-              ),
-              let title = metadata.title?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !title.isEmpty else { return }
+        let systemTitle: String?
+        if #available(iOS 26.4, *),
+           let metadata = try? await LinkMetadata(
+            fetching: url,
+            timeout: .seconds(6),
+            includeSubresources: false
+           ) {
+            systemTitle = metadata.title
+        } else {
+            systemTitle = nil
+        }
+
+        let trimmedSystemTitle = systemTitle?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let title = (isMeaningfulLinkTitle(trimmedSystemTitle, for: url)
+            ? trimmedSystemTitle
+            : await OpenGraphTitleFetcher.fetchTitle(from: url))?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let title, !title.isEmpty else { return false }
 
         item.title = String(title.prefix(120))
         try? modelContext.save()
+        return true
     }
 
     private static func isPlaceholderTitle(_ title: String, for url: URL) -> Bool {
         title == url.host || title == "共有した投稿"
+    }
+
+    private static func isMeaningfulLinkTitle(_ title: String?, for url: URL) -> Bool {
+        guard let title, !title.isEmpty else { return false }
+        return !isPlaceholderTitle(title, for: url) && title.caseInsensitiveCompare("X") != .orderedSame
+    }
+}
+
+private enum OpenGraphTitleFetcher {
+    static func fetchTitle(from url: URL) async -> String? {
+        guard let scheme = url.scheme?.lowercased(), ["http", "https"].contains(scheme) else { return nil }
+
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 8
+        request.setValue(
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 Version/26.0 Mobile/15E148 Safari/604.1",
+            forHTTPHeaderField: "User-Agent"
+        )
+
+        guard let (data, response) = try? await URLSession.shared.data(for: request),
+              let httpResponse = response as? HTTPURLResponse,
+              (200..<400).contains(httpResponse.statusCode),
+              data.count <= 1_000_000,
+              let html = String(data: data, encoding: .utf8) else {
+            return nil
+        }
+
+        return metaContent(named: "og:title", in: html)
+            ?? metaContent(named: "twitter:title", in: html)
+    }
+
+    private static func metaContent(named name: String, in html: String) -> String? {
+        guard let tagPattern = try? NSRegularExpression(pattern: "<meta\\b[^>]*>", options: [.caseInsensitive]) else {
+            return nil
+        }
+        let range = NSRange(html.startIndex..., in: html)
+        for match in tagPattern.matches(in: html, range: range) {
+            guard let tagRange = Range(match.range, in: html) else { continue }
+            let tag = String(html[tagRange])
+            let property = attribute(named: "property", in: tag) ?? attribute(named: "name", in: tag)
+            guard property?.caseInsensitiveCompare(name) == .orderedSame,
+                  let content = attribute(named: "content", in: tag) else { continue }
+            return htmlUnescaped(content)
+        }
+        return nil
+    }
+
+    private static func attribute(named name: String, in tag: String) -> String? {
+        let pattern = "\\b\(name)\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s>]+))"
+        guard let expression = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else {
+            return nil
+        }
+        let range = NSRange(tag.startIndex..., in: tag)
+        guard let match = expression.firstMatch(in: tag, range: range) else { return nil }
+        for index in 1..<match.numberOfRanges {
+            guard match.range(at: index).location != NSNotFound,
+                  let valueRange = Range(match.range(at: index), in: tag) else { continue }
+            return String(tag[valueRange])
+        }
+        return nil
+    }
+
+    private static func htmlUnescaped(_ string: String) -> String {
+        string
+            .replacing("&amp;", with: "&")
+            .replacing("&quot;", with: "\"")
+            .replacing("&#39;", with: "'")
+            .replacing("&lt;", with: "<")
+            .replacing("&gt;", with: ">")
     }
 }
 
