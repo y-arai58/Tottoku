@@ -44,12 +44,14 @@ enum SavedSource: String, CaseIterable, Identifiable {
 enum ClassificationState: String {
     case pending
     case automatic
+    case ruleBased
     case edited
 
     var displayName: String {
         switch self {
         case .pending: "未分類"
         case .automatic: "自動分類済み"
+        case .ruleBased: "簡易分類済み"
         case .edited: "編集済み"
         }
     }

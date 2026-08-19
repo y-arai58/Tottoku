@@ -53,5 +53,7 @@ private struct RootView: View {
         isImportingSharedPosts = true
         defer { isImportingSharedPosts = false }
         _ = await SharedInboxImporter.importPendingShares(into: modelContext)
+        let categoryNames = categories.filter { !$0.isArchived }.map(\.name)
+        _ = await SavedItemClassifier.classifyPendingItems(in: modelContext, categoryNames: categoryNames)
     }
 }
