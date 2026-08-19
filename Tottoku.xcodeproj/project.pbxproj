@@ -15,6 +15,7 @@
 		A007 /* CategorySeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = A107 /* CategorySeed.swift */; };
 		A008 /* IncomingShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = A109 /* IncomingShare.swift */; };
 		A009 /* SharedInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = A110 /* SharedInbox.swift */; };
+		A010 /* SharedInboxImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A112 /* SharedInboxImporter.swift */; };
 		B001 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B101 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B002 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B102 /* ShareViewController.swift */; };
 		B003 /* IncomingShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = A109 /* IncomingShare.swift */; };
@@ -33,6 +34,7 @@
 		A109 /* IncomingShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingShare.swift; sourceTree = "<group>"; };
 		A110 /* SharedInbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedInbox.swift; sourceTree = "<group>"; };
 		A111 /* Tottoku.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tottoku.entitlements; sourceTree = "<group>"; };
+		A112 /* SharedInboxImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedInboxImporter.swift; sourceTree = "<group>"; };
 		B101 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B102 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		B103 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -44,7 +46,7 @@
 		A202 /* Tottoku */ = {isa = PBXGroup; children = (A101 /* TottokuApp.swift */, A203 /* Models */, A204 /* Views */, A205 /* Sharing */, A107 /* CategorySeed.swift */, A111 /* Tottoku.entitlements */); path = Tottoku; sourceTree = "<group>"; };
 		A203 /* Models */ = {isa = PBXGroup; children = (A102 /* SavedItem.swift */, A103 /* Category.swift */); path = Models; sourceTree = "<group>"; };
 		A204 /* Views */ = {isa = PBXGroup; children = (A104 /* LibraryView.swift */, A105 /* SavedItemEditor.swift */, A106 /* CategorySettingsView.swift */); path = Views; sourceTree = "<group>"; };
-		A205 /* Sharing */ = {isa = PBXGroup; children = (A109 /* IncomingShare.swift */, A110 /* SharedInbox.swift */); path = Sharing; sourceTree = "<group>"; };
+		A205 /* Sharing */ = {isa = PBXGroup; children = (A109 /* IncomingShare.swift */, A110 /* SharedInbox.swift */, A112 /* SharedInboxImporter.swift */); path = Sharing; sourceTree = "<group>"; };
 		B201 /* ShareExtension */ = {isa = PBXGroup; children = (B102 /* ShareViewController.swift */, B103 /* Info.plist */, B104 /* ShareExtension.entitlements */); path = ShareExtension; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
@@ -63,7 +65,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A501 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A001 /* TottokuApp.swift in Sources */, A002 /* SavedItem.swift in Sources */, A003 /* Category.swift in Sources */, A004 /* LibraryView.swift in Sources */, A005 /* SavedItemEditor.swift in Sources */, A006 /* CategorySettingsView.swift in Sources */, A007 /* CategorySeed.swift in Sources */, A008 /* IncomingShare.swift in Sources */, A009 /* SharedInbox.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
+		A501 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A001 /* TottokuApp.swift in Sources */, A002 /* SavedItem.swift in Sources */, A003 /* Category.swift in Sources */, A004 /* LibraryView.swift in Sources */, A005 /* SavedItemEditor.swift in Sources */, A006 /* CategorySettingsView.swift in Sources */, A007 /* CategorySeed.swift in Sources */, A008 /* IncomingShare.swift in Sources */, A009 /* SharedInbox.swift in Sources */, A010 /* SharedInboxImporter.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
 		B501 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B002 /* ShareViewController.swift in Sources */, B003 /* IncomingShare.swift in Sources */, B004 /* SharedInbox.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 

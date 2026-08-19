@@ -25,6 +25,7 @@ struct TottokuApp: App {
 
 private struct RootView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @Query(sort: \Category.order) private var categories: [Category]
 
     var body: some View {
@@ -38,6 +39,11 @@ private struct RootView: View {
         .tint(.indigo)
         .task {
             CategorySeed.insertIfNeeded(into: modelContext, categories: categories)
+            _ = SharedInboxImporter.importPendingShares(into: modelContext)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            _ = SharedInboxImporter.importPendingShares(into: modelContext)
         }
     }
 }
