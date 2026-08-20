@@ -70,6 +70,7 @@ final class SavedItem {
     var tagNames: [String]
     var thumbnailURLString: String?
     @Attribute(.externalStorage) var screenshotImageData: Data?
+    var recognizedText: String
     var createdAt: Date
     var classificationStateRawValue: String
 
@@ -85,6 +86,7 @@ final class SavedItem {
         tagNames: [String] = [],
         thumbnailURLString: String? = nil,
         screenshotImageData: Data? = nil,
+        recognizedText: String = "",
         createdAt: Date = .now,
         classificationState: ClassificationState = .pending
     ) {
@@ -99,6 +101,7 @@ final class SavedItem {
         self.tagNames = tagNames
         self.thumbnailURLString = thumbnailURLString
         self.screenshotImageData = screenshotImageData
+        self.recognizedText = recognizedText
         self.createdAt = createdAt
         self.classificationStateRawValue = classificationState.rawValue
     }

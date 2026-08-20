@@ -2,6 +2,7 @@ import Foundation
 import FoundationModels
 import LinkPresentation
 import SwiftData
+import Vision
 
 @MainActor
 enum SharedInboxImporter {
@@ -41,6 +42,30 @@ enum SharedInboxImporter {
             }
         }
         return updatedCount
+    }
+
+    static func recognizeScreenshotText(in modelContext: ModelContext, limit: Int = 3) async -> Int {
+        guard let items = try? modelContext.fetch(FetchDescriptor<SavedItem>()) else { return 0 }
+        let itemsToRecognize = items
+            .filter {
+                guard let screenshotData = $0.screenshotImageData else { return false }
+                return !screenshotData.isEmpty
+                    && $0.recognizedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            }
+            .sorted { $0.createdAt > $1.createdAt }
+            .prefix(limit)
+
+        var recognizedCount = 0
+        for item in itemsToRecognize {
+            guard let screenshotData = item.screenshotImageData,
+                  let recognizedText = await ScreenshotTextRecognizer.recognize(in: screenshotData) else {
+                continue
+            }
+            item.recognizedText = recognizedText
+            try? modelContext.save()
+            recognizedCount += 1
+        }
+        return recognizedCount
     }
 
     @discardableResult
@@ -132,6 +157,23 @@ enum SharedInboxImporter {
     private static func isMeaningfulLinkTitle(_ title: String?, for url: URL) -> Bool {
         guard let title, !title.isEmpty else { return false }
         return !isPlaceholderTitle(title, for: url) && title.caseInsensitiveCompare("X") != .orderedSame
+    }
+}
+
+private enum ScreenshotTextRecognizer {
+    static func recognize(in imageData: Data) async -> String? {
+        var request = RecognizeTextRequest()
+        request.recognitionLevel = .accurate
+
+        guard let observations = try? await request.perform(on: imageData) else { return nil }
+        let recognizedText = observations
+            .map(\.transcript)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n")
+
+        guard !recognizedText.isEmpty else { return nil }
+        return String(recognizedText.prefix(6_000))
     }
 }
 
@@ -277,7 +319,8 @@ enum SavedItemClassifier {
         Allowed category names: \(availableCategories.joined(separator: ", "))
         Source: \(item.source.displayName)
         Title: \(item.title)
-        Text: \(item.bodyText)
+        Shared text: \(item.bodyText)
+        Text recognized from the saved screenshot: \(item.recognizedText)
         """
 
         do {
@@ -302,7 +345,7 @@ enum SavedItemClassifier {
         for item: SavedItem,
         availableCategories: [String]
     ) -> BookmarkClassification {
-        let text = "\(item.title) \(item.bodyText)".localizedLowercase
+        let text = "\(item.title) \(item.bodyText) \(item.recognizedText)".localizedLowercase
         let keywordCategories: [(String, [String])] = [
             ("食べ物", ["カフェ", "レストラン", "料理", "グルメ", "ランチ", "スイーツ", "food", "cafe"]),
             ("コスメ", ["コスメ", "メイク", "美容", "スキンケア", "リップ", "cosmetic", "makeup"]),
@@ -323,7 +366,7 @@ enum SavedItemClassifier {
 
         return BookmarkClassification(
             categoryName: category,
-            tags: hashtags(in: item.bodyText),
+            tags: hashtags(in: "\(item.bodyText) \(item.recognizedText)"),
             summary: normalizedSummary(item.title, fallback: "保存したリンク"),
             state: .ruleBased
         )

@@ -24,7 +24,7 @@ struct LibraryView: View {
             guard isInCategory else { return false }
             guard !searchText.isEmpty else { return true }
             let query = searchText.localizedLowercase
-            return [item.title, item.bodyText, item.summary, item.categoryName, item.author, item.source.displayName]
+            return [item.title, item.bodyText, item.recognizedText, item.summary, item.categoryName, item.author, item.source.displayName]
                 .contains { $0.localizedLowercase.contains(query) }
                 || item.tagNames.contains { $0.localizedLowercase.contains(query) }
         }
@@ -418,6 +418,16 @@ private struct SavedItemDetailView: View {
                     )
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
+                }
+
+                if !item.recognizedText.isEmpty {
+                    DisclosureGroup("画像から読み取った文字") {
+                        Text(item.recognizedText)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .textSelection(.enabled)
+                            .padding(.top, 6)
+                    }
                 }
 
                 Button {

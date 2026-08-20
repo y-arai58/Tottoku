@@ -112,6 +112,7 @@ private struct RootView: View {
             // Let the library render and accept taps before potentially slow network and AI work starts.
             await Task.yield()
             try? await Task.sleep(for: .milliseconds(400))
+            _ = await SharedInboxImporter.recognizeScreenshotText(in: modelContext, limit: 3)
             _ = await SharedInboxImporter.refreshPlaceholderLinkTitles(in: modelContext, limit: 3)
             _ = await SavedItemClassifier.classifyPendingItems(
                 in: modelContext,
