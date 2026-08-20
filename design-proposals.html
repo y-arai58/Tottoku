@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tottoku — Design directions</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f4f3f8;
+      color: #15141a;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    }
+    .page { max-width: 1500px; margin: auto; padding: 72px 30px 96px; }
+    .eyebrow { color: #6659da; font-size: 13px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 12px 0; font-size: clamp(34px, 5vw, 64px); letter-spacing: -.06em; }
+    .intro { max-width: 650px; margin: 0 0 52px; color: #63616d; font-size: 17px; line-height: 1.8; }
+    .proposals { display: grid; grid-template-columns: repeat(3, minmax(300px, 1fr)); gap: 22px; }
+    .proposal { background: #fff; border-radius: 30px; padding: 28px; box-shadow: 0 18px 50px rgba(25, 22, 48, .08); overflow: hidden; }
+    .proposal h2 { margin: 19px 0 6px; font-size: 23px; letter-spacing: -.04em; }
+    .proposal p { min-height: 48px; margin: 0 0 22px; color: #6b6875; font-size: 14px; line-height: 1.65; }
+    .logo-row { display: flex; align-items: center; gap: 13px; }
+    .wordmark { font-size: 23px; font-weight: 850; letter-spacing: -.07em; }
+    .icon { position: relative; display: grid; place-items: center; width: 62px; height: 62px; flex: 0 0 62px; border-radius: 20px; }
+    .phone { position: relative; width: 100%; max-width: 330px; min-height: 590px; margin: 0 auto; overflow: hidden; border: 7px solid #1f1f26; border-radius: 39px; background: #fff; box-shadow: 0 14px 28px rgba(22, 20, 36, .18); }
+    .phone::before { content: ""; position: absolute; z-index: 5; top: 8px; left: 50%; width: 92px; height: 23px; transform: translateX(-50%); border-radius: 18px; background: #1f1f26; }
+    .screen { padding: 43px 15px 92px; }
+    .app-top { display: flex; align-items: center; justify-content: space-between; }
+    .app-name { font-size: 25px; font-weight: 850; letter-spacing: -.07em; }
+    .plus { display: grid; place-items: center; width: 37px; height: 37px; border-radius: 14px; font-size: 26px; font-weight: 300; }
+    .search { display: flex; align-items: center; gap: 8px; margin: 17px 0 14px; padding: 10px 12px; border-radius: 14px; color: #8a8794; font-size: 12px; }
+    .chips { display: flex; gap: 6px; overflow: hidden; margin-bottom: 15px; }
+    .chip { white-space: nowrap; padding: 7px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .card { overflow: hidden; min-width: 0; }
+    .photo { position: relative; aspect-ratio: 1; overflow: hidden; }
+    .photo::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(transparent, rgba(0,0,0,.38)); }
+    .photo.a { background: radial-gradient(circle at 54% 30%, #f7dfc6 0 16%, transparent 17%), linear-gradient(135deg, #d09774, #5a3336 74%); }
+    .photo.b { background: radial-gradient(circle at 67% 24%, #fbd375 0 13%, transparent 14%), linear-gradient(135deg, #d1edf5, #4f7e9a); }
+    .photo.c { background: radial-gradient(circle at 46% 28%, #ffb9a9 0 15%, transparent 16%), linear-gradient(135deg, #f0c4dd, #733c7a); }
+    .photo.d { background: radial-gradient(circle at 55% 42%, #ceda86 0 18%, transparent 19%), linear-gradient(135deg, #80ad92, #315d59); }
+    .card-label { padding: 8px 2px 13px; font-size: 11px; font-weight: 800; line-height: 1.35; }
+    .card-label small { display: block; margin-top: 3px; font-size: 9px; font-weight: 600; opacity: .55; }
+    .source { position: absolute; z-index: 1; bottom: 7px; left: 7px; padding: 4px 6px; border-radius: 9px; background: rgba(255,255,255,.82); color: #17151c; font-size: 8px; font-weight: 800; }
+    .tabbar { position: absolute; z-index: 4; right: 12px; bottom: 13px; left: 12px; display: flex; justify-content: space-around; padding: 10px; border-radius: 19px; font-size: 9px; font-weight: 750; backdrop-filter: blur(14px); }
+
+    /* A: Bookmark Grid */
+    .a-theme .icon { background: #5d4ee8; }
+    .a-theme .icon span { position: absolute; width: 17px; height: 17px; border-radius: 5px; background: #fff; }
+    .a-theme .icon span:nth-child(1) { transform: translate(-10px, -10px); }
+    .a-theme .icon span:nth-child(2) { transform: translate(10px, -10px); }
+    .a-theme .icon span:nth-child(3) { transform: translate(-10px, 10px); }
+    .a-theme .icon span:nth-child(4) { transform: translate(10px, 10px); clip-path: polygon(0 0,100% 0,100% 100%,50% 76%,0 100%); }
+    .a-theme .plus, .a-theme .chip.selected { background: #5d4ee8; color: #fff; }
+    .a-theme .search, .a-theme .chip { background: #f0eff5; }
+    .a-theme .card { border-radius: 14px; }
+    .a-theme .tabbar { background: rgba(255,255,255,.84); box-shadow: 0 8px 24px rgba(70, 57, 130, .15); color: #5d4ee8; }
+
+    /* B: Pocket Save */
+    .b-theme .icon { background: #ff816d; }
+    .b-theme .icon::before { content: ""; width: 29px; height: 23px; border: 3px solid #fff; border-radius: 6px 6px 9px 9px; }
+    .b-theme .icon::after { content: ""; position: absolute; width: 17px; height: 17px; transform: translateY(4px) rotate(45deg); border: 3px solid #fff; border-top: 0; border-left: 0; }
+    .b-theme .plus, .b-theme .chip.selected { background: #ff816d; color: #fff; }
+    .b-theme .search, .b-theme .chip { background: #fff0ec; }
+    .b-theme .screen { background: linear-gradient(#fffaf8, #fff); }
+    .b-theme .card { border-radius: 23px; box-shadow: 0 7px 18px rgba(99, 46, 43, .12); }
+    .b-theme .tabbar { background: rgba(255, 239, 235, .9); color: #d85848; }
+
+    /* C: T Monogram */
+    .c-theme .icon { background: #17161d; border-radius: 50%; }
+    .c-theme .icon::before { content: "T"; color: #fff; font-family: Georgia, serif; font-size: 39px; font-weight: 700; transform: translateY(-2px); }
+    .c-theme .plus, .c-theme .chip.selected { background: #17161d; color: #fff; }
+    .c-theme .search, .c-theme .chip { background: #f1f1f1; }
+    .c-theme .card { border-radius: 4px; }
+    .c-theme .tabbar { border: 1px solid #dedde1; background: rgba(255,255,255,.92); color: #17161d; }
+    .c-theme .card-label { font-family: Georgia, "Hiragino Mincho ProN", serif; }
+    .palette { display: flex; gap: 7px; margin: 14px 0 21px; }
+    .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,.15); }
+    .recommendation { display: inline-block; padding: 6px 10px; border-radius: 999px; background: #eceaff; color: #5747e1; font-size: 11px; font-weight: 800; }
+    @media (max-width: 1050px) { .proposals { grid-template-columns: repeat(2, minmax(300px, 1fr)); } }
+    @media (max-width: 680px) { .page { padding: 40px 16px 64px; } .proposals { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow">Tottoku / visual directions</div>
+    <h1>あとで見つけるための、<br>とっておき。</h1>
+    <p class="intro">SNSで見つけた好きなものを、気軽に保存して、あとから探し直せる場所。ロゴ・色・カードの丸みまでを揃えた3つの方向性です。</p>
+
+    <section class="proposals">
+      <article class="proposal a-theme">
+        <div class="logo-row"><div class="icon"><span></span><span></span><span></span><span></span></div><div class="wordmark">tottoku</div></div>
+        <h2>01 — Bookmark Grid</h2>
+        <span class="recommendation">おすすめ</span>
+        <p>カテゴリと保存を象徴する4タイル＋しおり。整頓感があり、長く使っても飽きにくい方向です。</p>
+        <div class="palette"><i class="swatch" style="background:#5d4ee8"></i><i class="swatch" style="background:#f0eff5"></i><i class="swatch" style="background:#15141a"></i></div>
+        <div class="phone"><div class="screen">
+          <div class="app-top"><div class="app-name">とっとく</div><div class="plus">＋</div></div>
+          <div class="search">⌕　保存したものを検索</div><div class="chips"><span class="chip selected">すべて</span><span class="chip">服</span><span class="chip">旅行</span><span class="chip">コスメ</span></div>
+          <div class="grid">
+            <div class="card"><div class="photo a"><b class="source">X</b></div><div class="card-label">白Tシャツの比較<small>服</small></div></div>
+            <div class="card"><div class="photo b"><b class="source">Instagram</b></div><div class="card-label">週末の小旅行<small>旅行</small></div></div>
+            <div class="card"><div class="photo c"><b class="source">X</b></div><div class="card-label">夏のリップ3選<small>コスメ</small></div></div>
+            <div class="card"><div class="photo d"><b class="source">Web</b></div><div class="card-label">朝食のアイデア<small>食べ物</small></div></div>
+          </div></div><div class="tabbar">▦　ライブラリ　　☷　カテゴリ</div></div>
+      </article>
+
+      <article class="proposal b-theme">
+        <div class="logo-row"><div class="icon"></div><div class="wordmark">tottoku</div></div>
+        <h2>02 — Pocket Save</h2>
+        <p>投稿をポケットにしまう感覚をそのままロゴにした案。やさしく、個人的なコレクションらしさを出します。</p>
+        <div class="palette"><i class="swatch" style="background:#ff816d"></i><i class="swatch" style="background:#fff0ec"></i><i class="swatch" style="background:#563833"></i></div>
+        <div class="phone"><div class="screen">
+          <div class="app-top"><div class="app-name">とっとく</div><div class="plus">＋</div></div>
+          <div class="search">⌕　保存したものを検索</div><div class="chips"><span class="chip selected">すべて</span><span class="chip">服</span><span class="chip">旅行</span><span class="chip">コスメ</span></div>
+          <div class="grid">
+            <div class="card"><div class="photo c"><b class="source">X</b></div><div class="card-label">夏のリップ3選<small>コスメ</small></div></div>
+            <div class="card"><div class="photo a"><b class="source">Instagram</b></div><div class="card-label">白Tシャツの比較<small>服</small></div></div>
+            <div class="card"><div class="photo d"><b class="source">Web</b></div><div class="card-label">朝食のアイデア<small>食べ物</small></div></div>
+            <div class="card"><div class="photo b"><b class="source">Instagram</b></div><div class="card-label">週末の小旅行<small>旅行</small></div></div>
+          </div></div><div class="tabbar">▦　ライブラリ　　☷　カテゴリ</div></div>
+      </article>
+
+      <article class="proposal c-theme">
+        <div class="logo-row"><div class="icon"></div><div class="wordmark">TOTTOKU</div></div>
+        <h2>03 — T Monogram</h2>
+        <p>アプリアイコンでも強い「T」のモノグラム。画像を主役にし、道具として静かに使える方向です。</p>
+        <div class="palette"><i class="swatch" style="background:#17161d"></i><i class="swatch" style="background:#fff"></i><i class="swatch" style="background:#dedde1"></i></div>
+        <div class="phone"><div class="screen">
+          <div class="app-top"><div class="app-name">TOTTOKU</div><div class="plus">＋</div></div>
+          <div class="search">⌕　保存したものを検索</div><div class="chips"><span class="chip selected">すべて</span><span class="chip">服</span><span class="chip">旅行</span><span class="chip">コスメ</span></div>
+          <div class="grid">
+            <div class="card"><div class="photo d"><b class="source">Web</b></div><div class="card-label">朝食のアイデア<small>食べ物</small></div></div>
+            <div class="card"><div class="photo b"><b class="source">Instagram</b></div><div class="card-label">週末の小旅行<small>旅行</small></div></div>
+            <div class="card"><div class="photo a"><b class="source">X</b></div><div class="card-label">白Tシャツの比較<small>服</small></div></div>
+            <div class="card"><div class="photo c"><b class="source">X</b></div><div class="card-label">夏のリップ3選<small>コスメ</small></div></div>
+          </div></div><div class="tabbar">▦　ライブラリ　　☷　カテゴリ</div></div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
