@@ -50,7 +50,7 @@ enum SharedInboxImporter {
             .filter {
                 guard let screenshotData = $0.screenshotImageData else { return false }
                 return !screenshotData.isEmpty
-                    && $0.recognizedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                    && ($0.recognizedText ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             }
             .sorted { $0.createdAt > $1.createdAt }
             .prefix(limit)
@@ -323,7 +323,7 @@ enum SavedItemClassifier {
         Source: \(item.source.displayName)
         Title: \(item.title)
         Shared text: \(item.bodyText)
-        Text recognized from the saved screenshot: \(item.recognizedText)
+        Text recognized from the saved screenshot: \(item.recognizedText ?? "")
         """
 
         do {
@@ -348,7 +348,7 @@ enum SavedItemClassifier {
         for item: SavedItem,
         availableCategories: [String]
     ) -> BookmarkClassification {
-        let text = "\(item.title) \(item.bodyText) \(item.recognizedText)".localizedLowercase
+        let text = "\(item.title) \(item.bodyText) \(item.recognizedText ?? "")".localizedLowercase
         let keywordCategories: [(String, [String])] = [
             ("食べ物", ["カフェ", "レストラン", "料理", "グルメ", "ランチ", "スイーツ", "food", "cafe"]),
             ("コスメ", ["コスメ", "メイク", "美容", "スキンケア", "リップ", "cosmetic", "makeup"]),
@@ -369,7 +369,7 @@ enum SavedItemClassifier {
 
         return BookmarkClassification(
             categoryName: category,
-            tags: hashtags(in: "\(item.bodyText) \(item.recognizedText)"),
+            tags: hashtags(in: "\(item.bodyText) \(item.recognizedText ?? "")"),
             summary: normalizedSummary(item.title, fallback: "保存したリンク"),
             state: .ruleBased
         )

@@ -70,7 +70,7 @@ final class SavedItem {
     var tagNames: [String]
     var thumbnailURLString: String?
     @Attribute(.externalStorage) var screenshotImageData: Data?
-    var recognizedText: String
+    var recognizedText: String?
     var createdAt: Date
     var classificationStateRawValue: String
 
@@ -86,7 +86,7 @@ final class SavedItem {
         tagNames: [String] = [],
         thumbnailURLString: String? = nil,
         screenshotImageData: Data? = nil,
-        recognizedText: String = "",
+        recognizedText: String? = nil,
         createdAt: Date = .now,
         classificationState: ClassificationState = .pending
     ) {
