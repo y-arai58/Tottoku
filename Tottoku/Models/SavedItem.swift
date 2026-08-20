@@ -41,6 +41,13 @@ enum SavedSource: String, CaseIterable, Identifiable {
     }
 }
 
+/// 表紙に使える画像の有無。未確定のあいだ一覧は仮画像を出す。
+enum CoverState: String {
+    case unknown
+    case none
+    case artwork
+}
+
 enum ClassificationState: String {
     case pending
     case automatic
@@ -70,6 +77,11 @@ final class SavedItem {
     var tagNames: [String]
     var thumbnailURLString: String?
     @Attribute(.externalStorage) var screenshotImageData: Data?
+    /// 一覧用の縮小画像。巨大なスクリーンショットを一覧で展開しないために持つ。
+    @Attribute(.externalStorage) var coverThumbnailData: Data?
+    /// スクリーンショットを持つか。実データを読まずに後処理の対象を選ぶために持つ。
+    var hasScreenshot: Bool = false
+    var coverStateRawValue: String = CoverState.unknown.rawValue
     var recognizedText: String?
     var createdAt: Date
     var classificationStateRawValue: String
@@ -86,6 +98,9 @@ final class SavedItem {
         tagNames: [String] = [],
         thumbnailURLString: String? = nil,
         screenshotImageData: Data? = nil,
+        coverThumbnailData: Data? = nil,
+        hasScreenshot: Bool = false,
+        coverState: CoverState = .unknown,
         recognizedText: String? = nil,
         createdAt: Date = .now,
         classificationState: ClassificationState = .pending
@@ -101,11 +116,26 @@ final class SavedItem {
         self.tagNames = tagNames
         self.thumbnailURLString = thumbnailURLString
         self.screenshotImageData = screenshotImageData
+        self.coverThumbnailData = coverThumbnailData
+        self.hasScreenshot = hasScreenshot
+        self.coverStateRawValue = coverState.rawValue
         self.recognizedText = recognizedText
         self.createdAt = createdAt
         self.classificationStateRawValue = classificationState.rawValue
     }
 
     var source: SavedSource { SavedSource(rawValue: sourceRawValue) ?? .unknown }
+
+    var coverState: CoverState {
+        get { CoverState(rawValue: coverStateRawValue) ?? .unknown }
+        set { coverStateRawValue = newValue.rawValue }
+    }
+
+    /// 表紙の画像領域を出すか。未確定のあいだは仮画像を出すので true にする。
+    /// 巨大な`screenshotImageData`を読まずに判定できることが重要。
+    var showsCoverArea: Bool { coverState != .none }
+
+    /// 表紙に出せる画像が確定しているか。
+    var hasCoverArtwork: Bool { coverState == .artwork }
     var classificationState: ClassificationState { ClassificationState(rawValue: classificationStateRawValue) ?? .pending }
 }

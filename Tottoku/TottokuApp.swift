@@ -8,6 +8,7 @@ struct TottokuApp: App {
     private let modelContainer: ModelContainer
 
     init() {
+        FudgeAppearance.apply()
         do {
             let schema = Schema([SavedItem.self, Category.self])
             let configuration = ModelConfiguration(schema: schema, cloudKitDatabase: .none)
@@ -80,12 +81,14 @@ private struct RootView: View {
     var body: some View {
         TabView {
             LibraryView()
-                .tabItem { Label("ライブラリ", systemImage: "square.grid.2x2") }
+                .tabItem { Text("Library").accessibilityLabel("ライブラリ") }
 
             CategorySettingsView()
-                .tabItem { Label("カテゴリ", systemImage: "slider.horizontal.3") }
+                .tabItem { Text("Category").accessibilityLabel("カテゴリ") }
         }
-        .tint(.indigo)
+        .tint(Fudge.camel)
+        // 紙面の地色を前提にした配色なので、ダークモードでも誌面の見え方を保つ。
+        .preferredColorScheme(.light)
         .task {
             CategorySeed.insertIfNeeded(into: modelContext, categories: categories)
             await importSharedPosts()
@@ -111,6 +114,10 @@ private struct RootView: View {
         Task(priority: .utility) {
             // Let the library render and accept taps before potentially slow OCR, network, and AI work starts.
             await Task.yield()
+            try? await Task.sleep(for: .milliseconds(400))
+            // 表紙の状態を先に確定させる。確定するまで一覧は仮画像で操作できる。
+            CoverArtworkPreparer.clearNonContentThumbnails(in: modelContext)
+            _ = await CoverArtworkPreparer.prepareMissingCovers(in: modelContext)
             try? await Task.sleep(for: .seconds(2))
             _ = await SharedInboxImporter.recognizeScreenshotText(in: modelContext, limit: 1)
             _ = await SharedInboxImporter.refreshPlaceholderLinkTitles(in: modelContext, limit: 3)

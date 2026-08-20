@@ -1,8 +1,9 @@
 // !$*UTF8*$!
 {
 	archiveVersion = 1;
-	classes = {};
-	objectVersion = 77;
+	classes = {
+	};
+	objectVersion = 71;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,12 +16,39 @@
 		A007 /* CategorySeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = A107 /* CategorySeed.swift */; };
 		A008 /* IncomingShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = A109 /* IncomingShare.swift */; };
 		A009 /* SharedInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = A110 /* SharedInbox.swift */; };
-		A010 /* SharedInboxImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A112 /* SharedInboxImporter.swift */; };
+		A010 /* SharedInboxImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A113 /* SharedInboxImporter.swift */; };
+		A011 /* FudgeStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A114 /* FudgeStyle.swift */; };
+		A012 /* CoverArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = A115 /* CoverArtwork.swift */; };
+		A013 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A116 /* Assets.xcassets */; };
 		B001 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B101 /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B002 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B102 /* ShareViewController.swift */; };
 		B003 /* IncomingShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = A109 /* IncomingShare.swift */; };
 		B004 /* SharedInbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = A110 /* SharedInbox.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B501P /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A601 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B301;
+			remoteInfo = ShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A504 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B001 /* ShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A101 /* TottokuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TottokuApp.swift; sourceTree = "<group>"; };
@@ -29,76 +57,407 @@
 		A104 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		A105 /* SavedItemEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedItemEditor.swift; sourceTree = "<group>"; };
 		A106 /* CategorySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorySettingsView.swift; sourceTree = "<group>"; };
+		A114 /* FudgeStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FudgeStyle.swift; sourceTree = "<group>"; };
+		A115 /* CoverArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoverArtwork.swift; sourceTree = "<group>"; };
+		A116 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A107 /* CategorySeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategorySeed.swift; sourceTree = "<group>"; };
 		A108 /* Tottoku.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tottoku.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A109 /* IncomingShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingShare.swift; sourceTree = "<group>"; };
 		A110 /* SharedInbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedInbox.swift; sourceTree = "<group>"; };
 		A111 /* Tottoku.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tottoku.entitlements; sourceTree = "<group>"; };
-		A112 /* SharedInboxImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedInboxImporter.swift; sourceTree = "<group>"; };
+		A112 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A113 /* SharedInboxImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedInboxImporter.swift; sourceTree = "<group>"; };
 		B101 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B102 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		B103 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B104 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		A502 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B502 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
-		A201 = {isa = PBXGroup; children = (A202 /* Tottoku */, B201 /* ShareExtension */, A108 /* Tottoku.app */, B101 /* ShareExtension.appex */); sourceTree = "<group>"; };
-		A202 /* Tottoku */ = {isa = PBXGroup; children = (A101 /* TottokuApp.swift */, A203 /* Models */, A204 /* Views */, A205 /* Sharing */, A107 /* CategorySeed.swift */, A111 /* Tottoku.entitlements */); path = Tottoku; sourceTree = "<group>"; };
-		A203 /* Models */ = {isa = PBXGroup; children = (A102 /* SavedItem.swift */, A103 /* Category.swift */); path = Models; sourceTree = "<group>"; };
-		A204 /* Views */ = {isa = PBXGroup; children = (A104 /* LibraryView.swift */, A105 /* SavedItemEditor.swift */, A106 /* CategorySettingsView.swift */); path = Views; sourceTree = "<group>"; };
-		A205 /* Sharing */ = {isa = PBXGroup; children = (A109 /* IncomingShare.swift */, A110 /* SharedInbox.swift */, A112 /* SharedInboxImporter.swift */); path = Sharing; sourceTree = "<group>"; };
-		B201 /* ShareExtension */ = {isa = PBXGroup; children = (B102 /* ShareViewController.swift */, B103 /* Info.plist */, B104 /* ShareExtension.entitlements */); path = ShareExtension; sourceTree = "<group>"; };
+		A201 = {
+			isa = PBXGroup;
+			children = (
+				A202 /* Tottoku */,
+				B201 /* ShareExtension */,
+				A108 /* Tottoku.app */,
+				B101 /* ShareExtension.appex */,
+			);
+			sourceTree = "<group>";
+		};
+		A202 /* Tottoku */ = {
+			isa = PBXGroup;
+			children = (
+				A101 /* TottokuApp.swift */,
+				A203 /* Models */,
+				A204 /* Views */,
+				A205 /* Sharing */,
+				A107 /* CategorySeed.swift */,
+				A116 /* Assets.xcassets */,
+				A111 /* Tottoku.entitlements */,
+				A112 /* Info.plist */,
+			);
+			path = Tottoku;
+			sourceTree = "<group>";
+		};
+		A203 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A102 /* SavedItem.swift */,
+				A103 /* Category.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A204 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A104 /* LibraryView.swift */,
+				A105 /* SavedItemEditor.swift */,
+				A106 /* CategorySettingsView.swift */,
+				A114 /* FudgeStyle.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A205 /* Sharing */ = {
+			isa = PBXGroup;
+			children = (
+				A109 /* IncomingShare.swift */,
+				A110 /* SharedInbox.swift */,
+				A113 /* SharedInboxImporter.swift */,
+				A115 /* CoverArtwork.swift */,
+			);
+			path = Sharing;
+			sourceTree = "<group>";
+		};
+		B201 /* ShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				B102 /* ShareViewController.swift */,
+				B103 /* Info.plist */,
+				B104 /* ShareExtension.entitlements */,
+			);
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A301 /* Tottoku */ = {isa = PBXNativeTarget; buildConfigurationList = A401 /* Build configuration list for PBXNativeTarget "Tottoku" */; buildPhases = (A501 /* Sources */, A502 /* Frameworks */, A503 /* Resources */, A504 /* Embed App Extensions */); buildRules = (); dependencies = (B601 /* PBXTargetDependency */); name = Tottoku; productName = Tottoku; productReference = A108 /* Tottoku.app */; productType = "com.apple.product-type.application"; };
-		B301 /* ShareExtension */ = {isa = PBXNativeTarget; buildConfigurationList = B401 /* Build configuration list for PBXNativeTarget "ShareExtension" */; buildPhases = (B501 /* Sources */, B502 /* Frameworks */, B503 /* Resources */); buildRules = (); dependencies = (); name = ShareExtension; productName = ShareExtension; productReference = B101 /* ShareExtension.appex */; productType = "com.apple.product-type.app-extension"; };
+		A301 /* Tottoku */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A401 /* Build configuration list for PBXNativeTarget "Tottoku" */;
+			buildPhases = (
+				A501 /* Sources */,
+				A502 /* Frameworks */,
+				A503 /* Resources */,
+				A504 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B601 /* PBXTargetDependency */,
+			);
+			name = Tottoku;
+			productName = Tottoku;
+			productReference = A108 /* Tottoku.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B301 /* ShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B401 /* Build configuration list for PBXNativeTarget "ShareExtension" */;
+			buildPhases = (
+				B501 /* Sources */,
+				B502 /* Frameworks */,
+				B503 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShareExtension;
+			productName = ShareExtension;
+			productReference = B101 /* ShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		A601 /* Project object */ = {isa = PBXProject; attributes = { BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 2600; LastUpgradeCheck = 2600; TargetAttributes = { A301 = { CreatedOnToolsVersion = 26.0; }; B301 = { CreatedOnToolsVersion = 26.0; }; }; }; buildConfigurationList = A402 /* Build configuration list for PBXProject "Tottoku" */; compatibilityVersion = "Xcode 16.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base, ja); mainGroup = A201; productRefGroup = A201; projectDirPath = ""; projectRoot = ""; targets = (A301 /* Tottoku */, B301 /* ShareExtension */); };
+		A601 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					A301 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					B301 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = A402 /* Build configuration list for PBXProject "Tottoku" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				ja,
+			);
+			mainGroup = A201;
+			productRefGroup = A201;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A301 /* Tottoku */,
+				B301 /* ShareExtension */,
+			);
+		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A503 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-		B503 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		A503 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A013 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B503 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A501 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A001 /* TottokuApp.swift in Sources */, A002 /* SavedItem.swift in Sources */, A003 /* Category.swift in Sources */, A004 /* LibraryView.swift in Sources */, A005 /* SavedItemEditor.swift in Sources */, A006 /* CategorySettingsView.swift in Sources */, A007 /* CategorySeed.swift in Sources */, A008 /* IncomingShare.swift in Sources */, A009 /* SharedInbox.swift in Sources */, A010 /* SharedInboxImporter.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
-		B501 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B002 /* ShareViewController.swift in Sources */, B003 /* IncomingShare.swift in Sources */, B004 /* SharedInbox.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
+		A501 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A001 /* TottokuApp.swift in Sources */,
+				A002 /* SavedItem.swift in Sources */,
+				A003 /* Category.swift in Sources */,
+				A004 /* LibraryView.swift in Sources */,
+				A005 /* SavedItemEditor.swift in Sources */,
+				A006 /* CategorySettingsView.swift in Sources */,
+				A011 /* FudgeStyle.swift in Sources */,
+				A012 /* CoverArtwork.swift in Sources */,
+				A007 /* CategorySeed.swift in Sources */,
+				A008 /* IncomingShare.swift in Sources */,
+				A009 /* SharedInbox.swift in Sources */,
+				A010 /* SharedInboxImporter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B501 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B002 /* ShareViewController.swift in Sources */,
+				B003 /* IncomingShare.swift in Sources */,
+				B004 /* SharedInbox.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXFrameworksBuildPhase section */
-		A502 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-		B502 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-/* End PBXFrameworksBuildPhase section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		A504 /* Embed App Extensions */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 13; files = (B001 /* ShareExtension.appex in Embed App Extensions */); name = "Embed App Extensions"; runOnlyForDeploymentPostprocessing = 0; };
-/* End PBXCopyFilesBuildPhase section */
-
-/* Begin PBXContainerItemProxy section */
-		B501P /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = A601 /* Project object */; proxyType = 1; remoteGlobalIDString = B301; remoteInfo = ShareExtension; };
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXTargetDependency section */
-		B601 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = B301 /* ShareExtension */; targetProxy = B501P /* PBXContainerItemProxy */; };
+		B601 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B301 /* ShareExtension */;
+			targetProxy = B501P /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		A701 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; DEBUG_INFORMATION_FORMAT = dwarf; ENABLE_STRICT_OBJC_MSGSEND = YES; GCC_C_LANGUAGE_STANDARD = gnu17; GCC_NO_COMMON_BLOCKS = YES; GCC_WARN_64_TO_32_BIT_CONVERSION = YES; GCC_WARN_UNDECLARED_SELECTOR = YES; GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE; IPHONEOS_DEPLOYMENT_TARGET = 26.0; SDKROOT = iphoneos; SWIFT_VERSION = 6.0; }; name = Debug; };
-		A702 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; CLANG_ENABLE_OBJC_ARC = YES; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; ENABLE_NS_ASSERTIONS = NO; GCC_C_LANGUAGE_STANDARD = gnu17; IPHONEOS_DEPLOYMENT_TARGET = 26.0; SDKROOT = iphoneos; SWIFT_COMPILATION_MODE = wholemodule; SWIFT_VERSION = 6.0; }; name = Release; };
-		A703 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_ENTITLEMENTS = Tottoku/Tottoku.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; ENABLE_PREVIEWS = YES; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = Tottoku; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity"; IPHONEOS_DEPLOYMENT_TARGET = 26.0; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks"; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.tottoku.app; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SUPPORTS_MACCATALYST = NO; SWIFT_EMIT_LOC_STRINGS = YES; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
-		A704 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CODE_SIGN_ENTITLEMENTS = Tottoku/Tottoku.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = Tottoku; INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity"; IPHONEOS_DEPLOYMENT_TARGET = 26.0; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks"; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.tottoku.app; PRODUCT_NAME = "$(TARGET_NAME)"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_EMIT_LOC_STRINGS = YES; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
-		B701 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { APPLICATION_EXTENSION_API_ONLY = YES; CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; INFOPLIST_FILE = ShareExtension/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 26.0; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.tottoku.app.share; PRODUCT_NAME = "$(TARGET_NAME)"; SKIP_INSTALL = YES; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_EMIT_LOC_STRINGS = YES; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
-		B702 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { APPLICATION_EXTENSION_API_ONLY = YES; CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = ""; INFOPLIST_FILE = ShareExtension/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 26.0; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"; MARKETING_VERSION = 0.1.0; PRODUCT_BUNDLE_IDENTIFIER = com.tottoku.app.share; PRODUCT_NAME = "$(TARGET_NAME)"; SKIP_INSTALL = YES; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator"; SWIFT_EMIT_LOC_STRINGS = YES; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
+		A701 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A702 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A703 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Tottoku/Tottoku.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3KJ4LNXQ6Z;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Tottoku/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tottoku.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A704 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Tottoku/Tottoku.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3KJ4LNXQ6Z;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Tottoku/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tottoku.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B701 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3KJ4LNXQ6Z;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tottoku.app.share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B702 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = ShareExtension/ShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3KJ4LNXQ6Z;
+				INFOPLIST_FILE = ShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tottoku.app.share;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		A401 /* Build configuration list for PBXNativeTarget "Tottoku" */ = {isa = XCConfigurationList; buildConfigurations = (A703 /* Debug */, A704 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-		A402 /* Build configuration list for PBXProject "Tottoku" */ = {isa = XCConfigurationList; buildConfigurations = (A701 /* Debug */, A702 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-		B401 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {isa = XCConfigurationList; buildConfigurations = (B701 /* Debug */, B702 /* Release */); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A401 /* Build configuration list for PBXNativeTarget "Tottoku" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A703 /* Debug */,
+				A704 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A402 /* Build configuration list for PBXProject "Tottoku" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A701 /* Debug */,
+				A702 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B401 /* Build configuration list for PBXNativeTarget "ShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B701 /* Debug */,
+				B702 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 	};
 	rootObject = A601 /* Project object */;

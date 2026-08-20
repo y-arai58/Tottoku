@@ -17,7 +17,7 @@ enum SharedInboxImporter {
                 continue
             }
 
-            let item = savedItem(from: share)
+            let item = await savedItem(from: share)
             modelContext.insert(item)
             do {
                 try modelContext.save()
@@ -46,10 +46,11 @@ enum SharedInboxImporter {
 
     static func recognizeScreenshotText(in modelContext: ModelContext, limit: Int = 3) async -> Int {
         guard let items = try? modelContext.fetch(FetchDescriptor<SavedItem>()) else { return 0 }
+        // ここで screenshotImageData を読むと全保存ぶんの実データを展開してしまうので、
+        // 絞り込みは hasScreenshot だけで行い、実データは対象が決まってから読む。
         let itemsToRecognize = items
             .filter {
-                guard let screenshotData = $0.screenshotImageData else { return false }
-                return !screenshotData.isEmpty
+                $0.hasScreenshot
                     && ($0.recognizedText ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             }
             .sorted { $0.createdAt > $1.createdAt }
@@ -76,9 +77,19 @@ enum SharedInboxImporter {
         await fetchLinkMetadataIfNeeded(for: item, in: modelContext, force: true)
     }
 
-    private static func savedItem(from share: IncomingShare) -> SavedItem {
+    private static func savedItem(from share: IncomingShare) async -> SavedItem {
         let urlString = share.urlString ?? ""
         let screenshotImageData = try? SharedInbox.screenshotData(for: share)
+        let hasScreenshot = !(screenshotImageData?.isEmpty ?? true)
+
+        // 一覧用の縮小画像は取り込み時に作っておく。あとで一覧が実データを読まずに済む。
+        var coverThumbnailData: Data?
+        if hasScreenshot, let screenshotImageData {
+            coverThumbnailData = await Task.detached(priority: .userInitiated) {
+                CoverArtwork.downsampledJPEGData(from: screenshotImageData, maxPixelSize: CoverArtwork.listMaxPixelSize)
+            }.value
+        }
+
         return SavedItem(
             id: share.id,
             urlString: urlString,
@@ -86,6 +97,9 @@ enum SharedInboxImporter {
             title: title(for: share, urlString: urlString),
             bodyText: share.text.trimmingCharacters(in: .whitespacesAndNewlines),
             screenshotImageData: screenshotImageData,
+            coverThumbnailData: coverThumbnailData,
+            hasScreenshot: hasScreenshot,
+            coverState: coverThumbnailData == nil ? .unknown : .artwork,
             createdAt: share.receivedAt
         )
     }
@@ -119,7 +133,7 @@ enum SharedInboxImporter {
 
         let needsTitle = item.bodyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && isPlaceholderTitle(item.title, for: url)
-        let needsImage = item.thumbnailURLString?.isEmpty ?? true
+        let needsImage = !CoverArtwork.hasContentThumbnailURL(item)
         guard force || needsTitle || needsImage else { return false }
 
         let systemTitle: String?
@@ -144,9 +158,21 @@ enum SharedInboxImporter {
             item.title = String(title.prefix(120))
             didChange = true
         }
-        if let imageURL = preview.imageURL?.absoluteString, !imageURL.isEmpty,
-           item.thumbnailURLString != imageURL {
-            item.thumbnailURLString = imageURL
+        // Xは文字だけの投稿でもプロフィール画像をog:imageに返すため、中身の画像だけを表紙にする。
+        if let imageURL = preview.imageURL, CoverArtwork.isContentImageURL(imageURL) {
+            let imageURLString = imageURL.absoluteString
+            if !imageURLString.isEmpty, item.thumbnailURLString != imageURLString {
+                item.thumbnailURLString = imageURLString
+                didChange = true
+            }
+            if item.coverState != .artwork {
+                item.coverState = .artwork
+                didChange = true
+            }
+        } else if !item.hasScreenshot, item.coverState != .none {
+            // 中身の画像が見つからなかったので、タイトルだけの版面に確定させる。
+            item.thumbnailURLString = nil
+            item.coverState = .none
             didChange = true
         }
         if didChange { try? modelContext.save() }
