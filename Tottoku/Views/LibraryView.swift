@@ -11,6 +11,9 @@ struct LibraryView: View {
     @State private var selectedCategory = "すべて"
     @State private var isPresentingAddItem = false
     @State private var isPresentingShortcutGuide = false
+    @State private var isSelectingItems = false
+    @State private var selectedItemIDs: Set<UUID> = []
+    @State private var isPresentingBulkDeleteConfirmation = false
     @AppStorage("hasDismissedShortcutSetupTip") private var hasDismissedShortcutSetupTip = false
 
     private var visibleCategories: [Category] { categories.filter { !$0.isArchived } }
@@ -48,10 +51,20 @@ struct LibraryView: View {
                 } else {
                     LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 14) {
                         ForEach(filteredItems) { item in
-                            NavigationLink(value: item) {
-                                SavedItemCard(item: item)
+                            if isSelectingItems {
+                                Button {
+                                    toggleSelection(for: item)
+                                } label: {
+                                    SavedItemCard(item: item, isSelected: selectedItemIDs.contains(item.id))
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("\(item.title)を\(selectedItemIDs.contains(item.id) ? "選択解除" : "選択")")
+                            } else {
+                                NavigationLink(value: item) {
+                                    SavedItemCard(item: item)
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal)
@@ -63,13 +76,30 @@ struct LibraryView: View {
             }
             .searchable(text: $searchText, prompt: "保存したものを検索")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("保存の設定", systemImage: "questionmark.circle") {
-                        isPresentingShortcutGuide = true
+                if isSelectingItems {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("キャンセル") { endSelection() }
                     }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("追加", systemImage: "plus") { isPresentingAddItem = true }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(role: .destructive) {
+                            isPresentingBulkDeleteConfirmation = true
+                        } label: {
+                            Label("削除 (\(selectedItemIDs.count))", systemImage: "trash")
+                        }
+                        .disabled(selectedItemIDs.isEmpty)
+                    }
+                } else {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("保存の設定", systemImage: "questionmark.circle") {
+                            isPresentingShortcutGuide = true
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("選択") { isSelectingItems = true }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("追加", systemImage: "plus") { isPresentingAddItem = true }
+                    }
                 }
             }
             .sheet(isPresented: $isPresentingAddItem) {
@@ -82,6 +112,15 @@ struct LibraryView: View {
                     hasDismissedShortcutSetupTip = true
                 }
                 .presentationDetents([.medium, .large])
+            }
+            .confirmationDialog(
+                "選択した\(selectedItemIDs.count)件を削除しますか？",
+                isPresented: $isPresentingBulkDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("削除", role: .destructive) { deleteSelectedItems() }
+            } message: {
+                Text("削除した保存は元に戻せません。")
             }
         }
     }
@@ -127,6 +166,28 @@ struct LibraryView: View {
             .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 18))
         }
         .buttonStyle(.plain)
+    }
+
+    private func toggleSelection(for item: SavedItem) {
+        if selectedItemIDs.contains(item.id) {
+            selectedItemIDs.remove(item.id)
+        } else {
+            selectedItemIDs.insert(item.id)
+        }
+    }
+
+    private func endSelection() {
+        selectedItemIDs.removeAll()
+        isSelectingItems = false
+    }
+
+    private func deleteSelectedItems() {
+        let idsToDelete = selectedItemIDs
+        for item in items where idsToDelete.contains(item.id) {
+            modelContext.delete(item)
+        }
+        try? modelContext.save()
+        endSelection()
     }
 }
 
@@ -227,6 +288,7 @@ private struct CategoryChip: View {
 
 private struct SavedItemCard: View {
     let item: SavedItem
+    var isSelected = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
@@ -276,6 +338,15 @@ private struct SavedItemCard: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
+        .overlay(alignment: .topTrailing) {
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(.white, .indigo)
+                    .padding(8)
+                    .accessibilityHidden(true)
+            }
+        }
     }
 
     private var sourceColors: [Color] {
@@ -298,6 +369,15 @@ private struct SavedItemDetailView: View {
     @State private var isEditing = false
     @State private var isRefreshingMetadata = false
     @State private var isPresentingDeleteConfirmation = false
+
+    private var sourceURL: URL? {
+        guard let url = URL(string: item.urlString),
+              let scheme = url.scheme?.lowercased(),
+              ["http", "https"].contains(scheme) else {
+            return nil
+        }
+        return url
+    }
 
     var body: some View {
         ScrollView {
@@ -349,16 +429,17 @@ private struct SavedItemDetailView: View {
                 } label: {
                     Label(isRefreshingMetadata ? "リンク情報を取得中…" : "リンク情報を再取得", systemImage: "arrow.clockwise")
                 }
-                .disabled(isRefreshingMetadata || item.urlString.isEmpty)
+                .disabled(isRefreshingMetadata || sourceURL == nil)
 
-                Button {
-                    guard let url = URL(string: item.urlString) else { return }
-                    openURL(url)
-                } label: {
-                    Label("元の投稿を見る", systemImage: "arrow.up.right.square")
-                        .frame(maxWidth: .infinity)
+                if let sourceURL {
+                    Button {
+                        openURL(sourceURL)
+                    } label: {
+                        Label("元の投稿を見る", systemImage: "arrow.up.right.square")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .buttonStyle(.borderedProminent)
             }
             .padding()
         }
