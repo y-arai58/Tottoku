@@ -10,6 +10,8 @@ struct LibraryView: View {
     @State private var searchText = ""
     @State private var selectedCategory = "すべて"
     @State private var isPresentingAddItem = false
+    @State private var isPresentingShortcutGuide = false
+    @AppStorage("hasDismissedShortcutSetupTip") private var hasDismissedShortcutSetupTip = false
 
     private var visibleCategories: [Category] { categories.filter { !$0.isArchived } }
 
@@ -29,6 +31,12 @@ struct LibraryView: View {
         NavigationStack {
             ScrollView {
                 categoryFilter
+
+                if !hasDismissedShortcutSetupTip {
+                    shortcutSetupTip
+                        .padding(.horizontal)
+                        .padding(.bottom, 6)
+                }
 
                 if filteredItems.isEmpty {
                     ContentUnavailableView(
@@ -55,6 +63,11 @@ struct LibraryView: View {
             }
             .searchable(text: $searchText, prompt: "保存したものを検索")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("保存の設定", systemImage: "questionmark.circle") {
+                        isPresentingShortcutGuide = true
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("追加", systemImage: "plus") { isPresentingAddItem = true }
                 }
@@ -63,6 +76,12 @@ struct LibraryView: View {
                 SavedItemEditor(categories: visibleCategories) { draft in
                     modelContext.insert(draft)
                 }
+            }
+            .sheet(isPresented: $isPresentingShortcutGuide) {
+                ShortcutSetupGuide {
+                    hasDismissedShortcutSetupTip = true
+                }
+                .presentationDetents([.medium, .large])
             }
         }
     }
@@ -81,6 +100,111 @@ struct LibraryView: View {
             .padding(.vertical, 10)
         }
         .scrollIndicators(.hidden)
+    }
+
+    private var shortcutSetupTip: some View {
+        Button { isPresentingShortcutGuide = true } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "camera.viewfinder")
+                    .font(.title3)
+                    .foregroundStyle(.white)
+                    .frame(width: 42, height: 42)
+                    .background(.indigo, in: RoundedRectangle(cornerRadius: 13))
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("背面タップでスクショ保存")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+                    Text("ショートカットの設定方法を見る")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(12)
+            .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 18))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct ShortcutSetupGuide: View {
+    @Environment(\.dismiss) private var dismiss
+    let didComplete: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 22) {
+                    Image(systemName: "camera.viewfinder")
+                        .font(.system(size: 38, weight: .medium))
+                        .foregroundStyle(.white)
+                        .frame(width: 78, height: 78)
+                        .background(.indigo.gradient, in: RoundedRectangle(cornerRadius: 24))
+
+                    VStack(alignment: .leading, spacing: 7) {
+                        Text("背面タップで保存")
+                            .font(.title2.bold())
+                        Text("画面のスクリーンショットと、コピーしたリンクをまとめてTottokuに保存できます。")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    VStack(spacing: 12) {
+                        ShortcutGuideStep(number: "1", title: "投稿のリンクをコピー", detail: "Safari・X・Instagramなどで保存したい投稿のリンクをコピーします。")
+                        ShortcutGuideStep(number: "2", title: "ショートカットを作る", detail: "「スクリーンショットを撮る」→「クリップボードを取得」→「Tottokuにスクリーンショットを保存」の順に追加します。")
+                        ShortcutGuideStep(number: "3", title: "出力をつなぐ", detail: "スクリーンショットを「スクリーンショット」へ、クリップボードを「ページのリンク」へ指定します。")
+                        ShortcutGuideStep(number: "4", title: "背面タップに割り当てる", detail: "設定 ＞ アクセシビリティ ＞ タッチ ＞ 背面タップ で、作成したショートカットを選びます。")
+                    }
+
+                    Text("他のアプリで開いているリンクは、プライバシー保護のためTottokuが直接読み取れません。保存前にリンクをコピーしてください。")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .padding(14)
+                        .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 15))
+
+                    Button("設定できた") {
+                        didComplete()
+                        dismiss()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .frame(maxWidth: .infinity)
+                }
+                .padding()
+            }
+            .navigationTitle("スクショ保存の設定")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("閉じる") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+private struct ShortcutGuideStep: View {
+    let number: String
+    let title: String
+    let detail: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text(number)
+                .font(.subheadline.bold())
+                .foregroundStyle(.white)
+                .frame(width: 27, height: 27)
+                .background(.indigo, in: Circle())
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title).font(.subheadline.weight(.semibold))
+                Text(detail).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 17))
     }
 }
 
