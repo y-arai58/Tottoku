@@ -30,14 +30,16 @@ struct SavedItemEditor: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("保存する内容") {
+                Section {
                     TextField("URL", text: $urlString, axis: .vertical)
                         .textInputAutocapitalization(.never)
                         .keyboardType(.URL)
                     TextField("タイトル", text: $title)
                     TextField("投稿者（任意）", text: $author)
+                } header: {
+                    FudgeLabel("clipping", color: Fudge.camel, size: 8)
                 }
-                Section("整理") {
+                Section {
                     Picker("カテゴリ", selection: $categoryName) {
                         ForEach(categories) { category in Text(category.name).tag(category.name) }
                     }
@@ -45,10 +47,16 @@ struct SavedItemEditor: View {
                     TextField("短い要約（任意）", text: $summary, axis: .vertical)
                     TextField("メモ・投稿本文（任意）", text: $bodyText, axis: .vertical)
                         .lineLimit(3...6)
+                } header: {
+                    FudgeLabel("index", color: Fudge.camel, size: 8)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Fudge.paper)
             .navigationTitle(item == nil ? "保存を追加" : "保存を編集")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Fudge.paper, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("キャンセル") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -57,6 +65,7 @@ struct SavedItemEditor: View {
                 }
             }
         }
+        .tint(Fudge.camel)
     }
 
     private func save() {

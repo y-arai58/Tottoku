@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tottoku — 11 design directions</title>
+<style>
+:root{
+  color-scheme: light;
+  --ink:#141419; --ink2:#5f5d6a; --line:#e3e1ea; --bg:#efeef2;
+  --sans:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI","Yu Gothic",sans-serif;
+  --serif:"Hiragino Mincho ProN","Yu Mincho",Georgia,serif;
+  --maru:"Hiragino Maru Gothic ProN","Hiragino Sans",sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+
+/* ---------- page shell ---------- */
+.page{max-width:1560px;margin:auto;padding:76px 28px 110px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;color:#6b6879}
+h1{margin:14px 0 0;font-size:clamp(32px,4.6vw,58px);line-height:1.12;letter-spacing:-.055em}
+.lede{max-width:640px;margin:20px 0 0;color:var(--ink2);font-size:16px;line-height:1.85}
+.index{display:flex;flex-wrap:wrap;gap:7px;margin:34px 0 46px}
+.index a{padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#3f3d4a;font-size:12px;font-weight:700;text-decoration:none}
+.index a:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+
+.deck{display:grid;grid-template-columns:repeat(auto-fill,minmax(352px,1fr));gap:26px}
+.prop{background:#fff;border-radius:26px;padding:26px 24px 30px;box-shadow:0 16px 44px rgba(24,20,48,.07)}
+.phead{display:flex;align-items:baseline;gap:10px}
+.num{font-size:12px;font-weight:800;letter-spacing:.1em;color:#a6a3b2}
+.phead h2{margin:0;font-size:21px;letter-spacing:-.03em}
+.jp{margin:4px 0 0;font-size:12px;font-weight:700;color:#8d8a99}
+.desc{margin:14px 0 0;min-height:66px;color:#65626f;font-size:13.5px;line-height:1.75}
+.specs{margin:14px 0 0;border-top:1px solid var(--line);font-size:11.5px}
+.specs div{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.specs dt{flex:0 0 60px;color:#a09daf;font-weight:700}
+.specs dd{margin:0;color:#54515f;font-weight:600}
+.palette{display:flex;gap:6px;margin:16px 0 18px}
+.sw{width:20px;height:20px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.09)}
+.tag{display:inline-block;margin:12px 0 0;padding:5px 10px;border-radius:999px;background:#efedff;color:#5346d8;font-size:11px;font-weight:800}
+
+/* ---------- device ---------- */
+.device{position:relative;width:320px;height:648px;margin:20px auto 0;border:8px solid #1c1c22;border-radius:44px;background:#fff;overflow:hidden;box-shadow:0 16px 30px rgba(20,18,34,.2)}
+.device::after{content:"";position:absolute;z-index:9;top:9px;left:50%;width:86px;height:22px;transform:translateX(-50%);border-radius:14px;background:#1c1c22}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 14px 0;overflow:hidden}
+.body{flex:1;min-height:0;overflow:hidden}
+
+/* ---------- shared photo placeholders ---------- */
+.thumb{display:block;background-size:cover}
+.ph1{background:radial-gradient(circle at 52% 26%,#f6e2c8 0 15%,transparent 16%),linear-gradient(150deg,#d2a07d,#5c3733 78%)}
+.ph2{background:radial-gradient(circle at 70% 22%,#fbd77e 0 12%,transparent 13%),linear-gradient(150deg,#cfe9f3,#3f7391)}
+.ph3{background:radial-gradient(circle at 44% 30%,#ffb7a6 0 14%,transparent 15%),linear-gradient(150deg,#f2c6de,#6d3873)}
+.ph4{background:radial-gradient(circle at 56% 42%,#d3dd88 0 17%,transparent 18%),linear-gradient(150deg,#84b096,#2e5a55)}
+.ph5{background:radial-gradient(circle at 30% 24%,#ffe9c2 0 18%,transparent 19%),linear-gradient(150deg,#e6c79c,#7a5a3c)}
+.ph6{background:radial-gradient(circle at 62% 30%,#cfd8e6 0 14%,transparent 15%),linear-gradient(150deg,#8e9cb4,#33394a)}
+
+/* =======================================================
+   01 QUIET UTILITY
+   ======================================================= */
+.t01 .screen{background:#f2f2f7;padding:40px 0 0}
+.t01 .top{display:flex;align-items:flex-end;justify-content:space-between;padding:10px 16px 8px}
+.t01 .brand{font-size:27px;font-weight:800;letter-spacing:-.045em}
+.t01 .btn{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#e3e3ea;color:#4b4b55;font-size:17px}
+.t01 .search{margin:0 16px;padding:8px 11px;border-radius:10px;background:#e5e5ea;color:#8b8b93;font-size:12.5px}
+.t01 .seg{display:flex;margin:12px 16px;padding:2px;border-radius:9px;background:#e5e5ea;font-size:11px;font-weight:600;color:#5d5d66}
+.t01 .seg span{flex:1;text-align:center;padding:5px 0;border-radius:7px}
+.t01 .seg .on{background:#fff;color:#1c1c1e;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.t01 .body{background:#fff;border-top:1px solid #e0e0e6}
+.t01 .item{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid #ececf1}
+.t01 .thumb{width:44px;height:44px;flex:0 0 44px;border-radius:8px}
+.t01 .ttl{font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+.t01 .sub{margin-top:3px;font-size:10.5px;color:#8b8b93}
+.t01 .txt{flex:1;min-width:0}
+.t01 .chev{color:#c4c4cc;font-weight:400}
+.t01 .tabs{display:flex;justify-content:space-around;padding:9px 0 20px;border-top:1px solid #dededf;background:#f8f8fa;font-size:9.5px;font-weight:600;color:#8b8b93}
+.t01 .tabs .on{color:#3d4a5c}
+
+/* =======================================================
+   02 EDITORIAL
+   ======================================================= */
+.t02 .screen{background:#faf6ec;color:#211d16;padding:40px 20px 0}
+.t02 .top{display:flex;align-items:baseline;justify-content:space-between;padding:8px 0 10px}
+.t02 .brand{font-family:var(--serif);font-size:22px;letter-spacing:.22em}
+.t02 .issue{font-size:8.5px;letter-spacing:.16em;color:#8c8271}
+.t02 .rule{height:2px;background:#211d16}
+.t02 .rule.thin{height:1px;background:#c9c0ac;margin:14px 0}
+.t02 .feature{margin-top:14px}
+.t02 .feature .thumb{width:100%;aspect-ratio:4/3;filter:contrast(1.05) saturate(.85)}
+.t02 .cap{display:flex;gap:9px;margin-top:9px}
+.t02 .n{font-family:var(--serif);font-size:13px;line-height:1;padding-top:2px;color:#a4442d}
+.t02 .cap .ttl{font-family:var(--serif);font-size:16px;line-height:1.5}
+.t02 .cap em{display:block;margin-top:4px;font-size:9px;font-style:normal;letter-spacing:.1em;color:#8c8271}
+.t02 .item{display:flex;align-items:flex-start;gap:9px;padding:11px 0;border-bottom:1px solid #e2dac6}
+.t02 .item .txt{flex:1}
+.t02 .item .ttl{font-family:var(--serif);font-size:13px;line-height:1.45}
+.t02 .item .sub{margin-top:3px;font-size:8.5px;letter-spacing:.12em;color:#8c8271}
+.t02 .item .thumb{width:46px;height:46px;flex:0 0 46px;filter:saturate(.8)}
+.t02 .folio{padding:12px 0 18px;text-align:center;font-family:var(--serif);font-size:9px;letter-spacing:.2em;color:#8c8271}
+
+/* =======================================================
+   03 NEO-BRUTALIST POP
+   ======================================================= */
+.t03 .screen{background:#f2ff3d;color:#0a0a0a;padding:40px 12px 0}
+.t03 .top{display:flex;align-items:center;justify-content:space-between;padding:8px 0 12px}
+.t03 .brand{font-size:22px;font-weight:900;letter-spacing:-.02em;-webkit-text-stroke:0}
+.t03 .btn{width:32px;height:32px;display:grid;place-items:center;border:3px solid #0a0a0a;border-radius:0;background:#ff3b7f;color:#fff;font-size:20px;font-weight:900;box-shadow:4px 4px 0 #0a0a0a}
+.t03 .filters{display:flex;gap:6px;margin-bottom:12px}
+.t03 .f{padding:5px 9px;border:2.5px solid #0a0a0a;background:#fff;font-size:9.5px;font-weight:900;letter-spacing:.06em}
+.t03 .f.on{background:#0a0a0a;color:#f2ff3d}
+.t03 .body{display:grid;grid-template-columns:1fr 1fr;gap:11px;align-content:start}
+.t03 .item{border:3px solid #0a0a0a;background:#fff;box-shadow:5px 5px 0 #0a0a0a}
+.t03 .item .thumb{width:100%;aspect-ratio:1;border-bottom:3px solid #0a0a0a;filter:contrast(1.15) saturate(1.2)}
+.t03 .bar{padding:6px 7px}
+.t03 .bar .ttl{font-size:10.5px;font-weight:900;line-height:1.3}
+.t03 .bar .sub{margin-top:3px;font-size:8px;font-weight:800;letter-spacing:.08em;color:#0a0a0a;opacity:.6}
+.t03 .tabs{display:flex;gap:8px;margin:12px 0 16px}
+.t03 .tabs span{flex:1;padding:9px 0;border:3px solid #0a0a0a;background:#fff;text-align:center;font-size:9.5px;font-weight:900;letter-spacing:.1em}
+.t03 .tabs .on{background:#2b39ff;color:#fff;box-shadow:4px 4px 0 #0a0a0a}
+
+/* =======================================================
+   04 DARK GALLERY
+   ======================================================= */
+.t04 .screen{background:#0a0a0c;color:#ececf0;padding:40px 12px 0}
+.t04 .top{padding:12px 0 10px;text-align:center;border-bottom:1px solid #23232a}
+.t04 .brand{font-size:10.5px;font-weight:600;letter-spacing:.42em;color:#d6d3c6}
+.t04 .filters{display:flex;justify-content:center;gap:14px;padding:12px 0 14px;font-size:9.5px;letter-spacing:.16em;color:#6a6a74}
+.t04 .filters .on{color:#c9a227;border-bottom:1px solid #c9a227;padding-bottom:2px}
+.t04 .body{columns:2;column-gap:9px}
+.t04 .item{break-inside:avoid;margin-bottom:16px}
+.t04 .item .thumb{width:100%;filter:saturate(.72) brightness(.86) contrast(1.1)}
+.t04 .h1x{aspect-ratio:3/4}.t04 .h2x{aspect-ratio:1}.t04 .h3x{aspect-ratio:4/5}.t04 .h4x{aspect-ratio:5/7}
+.t04 .cap{margin-top:7px;font-size:9px;letter-spacing:.06em;line-height:1.5;color:#d2d0d6}
+.t04 .cap em{display:block;margin-top:3px;font-style:normal;font-size:7.5px;letter-spacing:.2em;color:#6a6a74}
+.t04 .fab{position:absolute;right:16px;bottom:24px;width:46px;height:46px;display:grid;place-items:center;border:1px solid #3a3a42;border-radius:50%;background:rgba(18,18,22,.86);backdrop-filter:blur(8px);color:#c9a227;font-size:20px;font-weight:300}
+
+/* =======================================================
+   05 KAWAII STICKER
+   ======================================================= */
+.t05 .screen{background:linear-gradient(#fff2f7,#f6f0ff 70%,#eef6ff);font-family:var(--maru);color:#4b3a52;padding:40px 14px 0}
+.t05 .top{display:flex;align-items:center;justify-content:space-between;padding:8px 2px 10px}
+.t05 .brand{font-size:24px;font-weight:800;letter-spacing:-.02em;color:#ff7fae}
+.t05 .btn{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:#ff7fae;color:#fff;font-size:19px;box-shadow:0 4px 0 #e75f92}
+.t05 .search{padding:9px 13px;border-radius:999px;background:#fff;color:#b4a5bd;font-size:11.5px;box-shadow:0 3px 0 #ecdff0}
+.t05 .filters{display:flex;gap:6px;margin:11px 0 14px}
+.t05 .f{padding:6px 11px;border-radius:999px;background:#fff;color:#8d7a97;font-size:9.5px;font-weight:800;box-shadow:0 2px 0 #ecdff0}
+.t05 .f.on{background:#ffd84d;color:#6b4a12;box-shadow:0 2px 0 #e5bb2c}
+.t05 .body{display:grid;grid-template-columns:1fr 1fr;gap:13px;align-content:start;padding:4px}
+.t05 .item{position:relative;padding:5px 5px 8px;border-radius:18px;background:#fff;box-shadow:0 6px 14px rgba(120,80,140,.14)}
+.t05 .item:nth-child(odd){transform:rotate(-2deg)}
+.t05 .item:nth-child(even){transform:rotate(1.6deg)}
+.t05 .item .thumb{width:100%;aspect-ratio:1;border-radius:14px;filter:saturate(1.12) brightness(1.04)}
+.t05 .badge{position:absolute;top:-7px;right:-6px;width:24px;height:24px;display:grid;place-items:center;border:2px solid #fff;border-radius:50%;background:#ff7fae;color:#fff;font-size:11px}
+.t05 .ttl{padding:6px 4px 0;font-size:10px;font-weight:800;line-height:1.35}
+.t05 .sub{padding:0 4px;margin-top:3px;font-size:8px;font-weight:700;color:#b39fbc}
+.t05 .tabs{display:flex;justify-content:space-around;margin:12px 6px 18px;padding:10px;border-radius:20px;background:#fff;font-size:9px;font-weight:800;color:#c2b0ca;box-shadow:0 4px 0 #eadff0}
+.t05 .tabs .on{color:#ff7fae}
+
+/* =======================================================
+   06 BENTO DASHBOARD
+   ======================================================= */
+.t06 .screen{background:#f3f0eb;color:#242019;padding:40px 12px 0}
+.t06 .top{display:flex;align-items:center;justify-content:space-between;padding:9px 2px 12px}
+.t06 .brand{font-size:17px;font-weight:800;letter-spacing:-.03em}
+.t06 .btn{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:#b4552f;color:#fff;font-size:16px}
+.t06 .body{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:min-content;gap:8px;align-content:start}
+.t06 .item{padding:11px;border-radius:14px;background:#fff;box-shadow:0 1px 2px rgba(40,30,20,.06)}
+.t06 .wide{grid-column:span 2}
+.t06 .stat b{display:block;font-family:var(--mono);font-size:27px;font-weight:600;letter-spacing:-.04em;line-height:1}
+.t06 .stat span{display:block;margin-top:6px;font-size:8px;font-weight:800;letter-spacing:.14em;color:#9b9285}
+.t06 .stat.alt{background:#b4552f;color:#fff}
+.t06 .stat.alt span{color:#f0c9b6}
+.t06 .img{padding:0;overflow:hidden;display:flex;align-items:stretch}
+.t06 .img .thumb{width:112px;flex:0 0 112px;filter:saturate(.9)}
+.t06 .img .cap{padding:12px 11px}
+.t06 .img .ttl{font-size:12.5px;font-weight:700}
+.t06 .img em{display:block;margin-top:5px;font-style:normal;font-size:8px;font-weight:800;letter-spacing:.12em;color:#9b9285}
+.t06 .sq{padding:0;overflow:hidden}
+.t06 .sq .thumb{width:100%;aspect-ratio:1.35;filter:saturate(.9)}
+.t06 .sq .ttl{padding:8px 10px 10px;font-size:10.5px;font-weight:700;line-height:1.35}
+.t06 .bars .lb{display:flex;justify-content:space-between;font-size:8.5px;font-weight:800;letter-spacing:.1em;color:#9b9285}
+.t06 .bar{height:7px;margin:7px 0 10px;border-radius:99px;background:#ece7de;overflow:hidden}
+.t06 .bar i{display:block;height:100%;border-radius:99px;background:#b4552f}
+.t06 .tabs{display:flex;gap:6px;margin:10px 0 18px}
+.t06 .tabs span{flex:1;padding:8px 0;border-radius:10px;background:#e7e2d9;text-align:center;font-size:8.5px;font-weight:800;letter-spacing:.1em;color:#8e8578}
+.t06 .tabs .on{background:#242019;color:#f3f0eb}
+
+/* =======================================================
+   07 WASHI ZEN
+   ======================================================= */
+.t07 .screen{background:#f8f5ee;color:#1e1b16;padding:40px 22px 0;
+  background-image:radial-gradient(rgba(0,0,0,0) 1px,rgba(60,50,35,.045) 1.1px);background-size:3px 3px}
+.t07 .top{padding:16px 0 8px}
+.t07 .brand{font-family:var(--serif);font-size:19px;letter-spacing:.5em}
+.t07 .sub0{margin-top:8px;font-size:8px;letter-spacing:.3em;color:#a09580}
+.t07 .hair{height:1px;margin:16px 0 0;background:#d8d0be}
+.t07 .side{position:absolute;top:96px;right:8px;writing-mode:vertical-rl;font-family:var(--serif);font-size:9px;letter-spacing:.42em;color:#b3a894}
+.t07 .item{display:flex;gap:14px;padding:18px 0;border-bottom:1px solid #e6dfcd}
+.t07 .item .thumb{width:58px;height:58px;flex:0 0 58px;box-shadow:0 0 0 1px #ded5c2;filter:saturate(.62) contrast(.95)}
+.t07 .date{font-family:var(--serif);font-size:8.5px;letter-spacing:.14em;color:#a09580}
+.t07 .ttl{margin-top:6px;font-family:var(--serif);font-size:14px;line-height:1.55}
+.t07 .cat{margin-top:8px;font-size:8px;letter-spacing:.2em;color:#2b3a55}
+.t07 .seal{position:absolute;right:20px;bottom:26px;width:34px;height:34px;display:grid;place-items:center;border:1px solid #97392f;border-radius:3px;color:#97392f;font-family:var(--serif);font-size:13px;letter-spacing:0}
+.t07 .foot{padding:14px 0 22px;font-family:var(--serif);font-size:8.5px;letter-spacing:.28em;color:#a09580}
+
+/* =======================================================
+   08 TERMINAL ARCHIVE
+   ======================================================= */
+.t08 .screen{background:#0c1016;color:#c9d3de;font-family:var(--mono);padding:40px 12px 0;font-size:10px}
+.t08 .top{display:flex;justify-content:space-between;padding:10px 2px;border-bottom:1px solid #1e2733;font-size:8.5px;color:#5c6b7d}
+.t08 .top b{color:#7ee787;font-weight:500}
+.t08 .prompt{padding:12px 2px 4px;color:#7ee787;font-size:10px}
+.t08 .prompt i{font-style:normal;color:#3c4b5c}
+.t08 .caret{display:inline-block;width:6px;height:11px;vertical-align:-1px;background:#7ee787}
+.t08 .head{display:flex;gap:8px;padding:10px 2px 6px;border-bottom:1px dashed #22303f;font-size:8px;letter-spacing:.08em;color:#4d5c6d}
+.t08 .item{display:flex;gap:8px;align-items:baseline;padding:8px 2px;border-bottom:1px solid #151d26}
+.t08 .item:hover{background:#121a23}
+.t08 .d{color:#4d5c6d;flex:0 0 58px}
+.t08 .c{color:#e3b341;flex:0 0 46px}
+.t08 .n2{flex:1;min-width:0;color:#dbe3ec;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t08 .s{color:#5c6b7d;font-size:8.5px}
+.t08 .blk{color:#2c6ea1;letter-spacing:-1px}
+.t08 .tabs{display:flex;gap:12px;padding:12px 4px 20px;border-top:1px solid #1e2733;font-size:9px;color:#4d5c6d}
+.t08 .tabs .on{color:#7ee787}
+.t08 .hint{padding:8px 2px 0;font-size:8px;color:#3c4b5c}
+
+/* =======================================================
+   09 LIQUID GLASS
+   ======================================================= */
+.t09 .screen{padding:40px 14px 0;color:#fff;overflow:hidden;
+  background:#2a1a5e;
+  background-image:radial-gradient(circle at 18% 8%,#ff6fa8 0,transparent 46%),
+    radial-gradient(circle at 88% 18%,#57d1ff 0,transparent 44%),
+    radial-gradient(circle at 72% 92%,#8b5cff 0,transparent 52%),
+    radial-gradient(circle at 8% 78%,#ffcf6f 0,transparent 42%),
+    linear-gradient(#1d1140,#331a5c)}
+.t09 .top{display:flex;align-items:center;justify-content:space-between;padding:10px 4px 12px}
+.t09 .brand{font-size:23px;font-weight:750;letter-spacing:-.05em;text-shadow:0 2px 12px rgba(20,0,50,.35)}
+.t09 .btn{width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.5);border-radius:50%;background:rgba(255,255,255,.22);backdrop-filter:blur(14px);font-size:18px;font-weight:300}
+.t09 .search{padding:10px 14px;border:1px solid rgba(255,255,255,.34);border-radius:999px;background:rgba(255,255,255,.16);backdrop-filter:blur(16px);font-size:11.5px;color:rgba(255,255,255,.72)}
+.t09 .seg{display:flex;gap:4px;margin:11px 0 14px;padding:3px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.13);backdrop-filter:blur(16px);font-size:10px;font-weight:700}
+.t09 .seg span{flex:1;padding:6px 0;border-radius:999px;text-align:center;color:rgba(255,255,255,.72)}
+.t09 .seg .on{background:rgba(255,255,255,.9);color:#3b1e6e}
+.t09 .body{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
+.t09 .item{position:relative;border:1px solid rgba(255,255,255,.3);border-radius:20px;overflow:hidden;background:rgba(255,255,255,.12);box-shadow:0 8px 22px rgba(20,0,50,.28)}
+.t09 .item .thumb{width:100%;aspect-ratio:1;filter:saturate(1.06)}
+.t09 .glass{padding:8px 9px 10px;background:rgba(255,255,255,.14);backdrop-filter:blur(18px)}
+.t09 .ttl{font-size:10.5px;font-weight:700;line-height:1.3}
+.t09 .sub{margin-top:3px;font-size:8px;font-weight:600;color:rgba(255,255,255,.66)}
+.t09 .tabs{display:flex;justify-content:space-around;margin:12px 8px 18px;padding:11px;border:1px solid rgba(255,255,255,.3);border-radius:22px;background:rgba(255,255,255,.16);backdrop-filter:blur(20px);font-size:9px;font-weight:700;color:rgba(255,255,255,.62)}
+.t09 .tabs .on{color:#fff}
+
+/* =======================================================
+   10 RISOGRAPH PRINT
+   ======================================================= */
+.t10 .screen{background:#f1ece0;color:#111;padding:40px 14px 0;
+  background-image:radial-gradient(rgba(0,0,0,0) 1px,rgba(0,0,0,.05) 1.1px);background-size:3px 3px}
+.t10 .regmark{position:absolute;top:44px;right:12px;width:14px;height:14px;border-radius:50%;border:1px solid #ff3d77;opacity:.85}
+.t10 .regmark::before{content:"";position:absolute;inset:-4px 6px;border-left:1px solid #2b3bff}
+.t10 .top{display:flex;align-items:flex-end;justify-content:space-between;padding:10px 0 8px}
+.t10 .brand{font-size:26px;font-weight:900;letter-spacing:-.04em;transform:scaleX(.86);transform-origin:left;color:#2b3bff;text-shadow:2px 2px 0 rgba(255,61,119,.85)}
+.t10 .btn{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#ff3d77;color:#f1ece0;font-size:18px;font-weight:900}
+.t10 .strip{display:flex;justify-content:space-between;padding:5px 7px;background:#2b3bff;color:#f1ece0;font-size:8px;font-weight:900;letter-spacing:.26em}
+.t10 .body{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;align-content:start}
+.t10 .item{position:relative}
+.t10 .item .thumb{width:100%;aspect-ratio:1;filter:grayscale(1) contrast(1.4) brightness(1.12)}
+.t10 .wrap{position:relative;overflow:hidden}
+.t10 .wrap::before{content:"";position:absolute;inset:0;z-index:1;mix-blend-mode:multiply;background:#ff3d77}
+.t10 .wrap.b::before{background:#2b3bff}
+.t10 .wrap::after{content:"";position:absolute;inset:0;z-index:2;
+  background:radial-gradient(rgba(241,236,224,.9) 1.5px,transparent 1.7px);background-size:5px 5px}
+.t10 .ttl{margin-top:7px;font-size:10.5px;font-weight:900;line-height:1.3;letter-spacing:-.01em}
+.t10 .sub{margin-top:3px;font-size:7.5px;font-weight:900;letter-spacing:.14em;color:#2b3bff}
+.t10 .item:nth-child(2) .sub,.t10 .item:nth-child(3) .sub{color:#d5215a}
+.t10 .tabs{display:flex;justify-content:space-between;margin:14px 0 18px;padding:9px 10px;border-top:2px solid #111;border-bottom:2px solid #111;font-size:8.5px;font-weight:900;letter-spacing:.2em}
+.t10 .tabs .on{color:#ff3d77}
+
+
+/* =======================================================
+   11 FUDGE — フレンチカジュアル誌
+   ======================================================= */
+.t11 .screen{background:#f7f3ea;color:#2f2a24;padding:40px 15px 0}
+.t11 .mast{display:flex;align-items:center;justify-content:space-between;padding:9px 0 4px;font-size:7px;letter-spacing:.24em;color:#8e8271}
+.t11 .brand{font-family:"Times New Roman",Georgia,serif;font-weight:700;font-size:24px;letter-spacing:.05em;line-height:1.1;text-align:center}
+.t11 .kicker{padding:5px 0 7px;text-align:center;font-family:Georgia,serif;font-style:italic;font-size:9px;letter-spacing:.04em;color:#b98a4f}
+.t11 .dbl{height:3px;border-top:1px solid #2f2a24;border-bottom:1px solid #2f2a24}
+.t11 .thumb{filter:sepia(.42) saturate(.62) contrast(1.06) brightness(1.03)}
+.t11 .hero{position:relative;margin-top:9px}
+.t11 .hero .thumb{width:100%;aspect-ratio:4/2.5}
+.t11 .plate{position:absolute;left:9px;bottom:9px;right:46px;padding:8px 10px 9px;background:rgba(247,243,234,.95);border:.5px solid rgba(47,42,36,.3)}
+.t11 .plate em{display:block;font-family:Georgia,serif;font-style:italic;font-size:8px;letter-spacing:.03em;color:#a5432c}
+.t11 .plate .ttl{margin-top:3px;font-family:"Hiragino Mincho ProN",var(--serif);font-size:12px;line-height:1.45}
+.t11 .plate .sub{margin-top:5px;font-size:6.5px;letter-spacing:.2em;color:#8e8271}
+.t11 .sec{display:flex;align-items:center;gap:9px;margin:12px 0 9px}
+.t11 .sec b{font-family:Georgia,serif;font-size:9px;font-weight:400;letter-spacing:.32em}
+.t11 .sec i{flex:1;height:1px;background:#d5cbb7}
+.t11 .sec u{font-size:6.5px;letter-spacing:.18em;text-decoration:none;color:#b98a4f}
+.t11 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.t11 .grid2 .thumb{width:100%;aspect-ratio:1/1.02}
+.t11 .grid2 .ttl{margin-top:6px;font-family:"Hiragino Mincho ProN",var(--serif);font-size:10px;line-height:1.45}
+.t11 .grid2 .sub{margin-top:4px;font-size:6.5px;letter-spacing:.18em;color:#8e8271}
+.t11 .grid2 .sub b{color:#b98a4f;font-weight:400}
+.t11 .idx{margin-top:12px;border-top:1px solid #d5cbb7}
+.t11 .idx div{display:flex;align-items:baseline;gap:6px;padding:6px 0 5px;font-size:6.5px;letter-spacing:.16em;color:#8e8271}
+.t11 .idx span{flex:0 0 34px;color:#b98a4f}
+.t11 .idx em{flex:1;min-width:0;font-family:"Hiragino Mincho ProN",var(--serif);font-style:normal;font-size:9.5px;letter-spacing:0;color:#2f2a24;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t11 .folio{display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid #2f2a24;font-family:Georgia,serif;font-size:7px;letter-spacing:.22em;color:#8e8271}
+.t11 .tabs{display:flex;justify-content:space-between;padding:1px 0 17px;font-family:Georgia,serif;font-size:8px;letter-spacing:.24em;color:#a89d8b}
+.t11 .tabs .on{color:#2f2a24;border-bottom:1px solid #b98a4f;padding-bottom:3px}
+
+@media (max-width:760px){.page{padding:44px 16px 70px}.deck{grid-template-columns:1fr}.device{transform:scale(.96)}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="eyebrow">TOTTOKU / 11 VISUAL DIRECTIONS</div>
+  <h1>とっておきの置き場所を、<br>11通りの性格で。</h1>
+  <p class="lede">同じ「SNSで見つけたものを保存して探し直す」アプリを、テイストの違う11案で組みました。配色を変えただけの案は入れていません。画面構成（一覧かリストか、余白の量、写真の扱い）から違えているので、まず「どの性格で使いたいか」で選んでもらえます。</p>
+
+  <nav class="index">
+    <a href="#d01">01 静かな道具</a><a href="#d02">02 雑誌の切り抜き</a><a href="#d03">03 ネオ・ブルータル</a>
+    <a href="#d04">04 夜のギャラリー</a><a href="#d05">05 シール帳</a><a href="#d06">06 ベントー</a>
+    <a href="#d07">07 和紙と余白</a><a href="#d08">08 ターミナル</a><a href="#d09">09 リキッドグラス</a>
+    <a href="#d10">10 リソグラフ</a><a href="#d11">11 FUDGE</a>
+  </nav>
+
+  <section class="deck">
+
+  <!-- 01 -->
+  <article class="prop t01" id="d01">
+    <div class="phead"><span class="num">01</span><h2>Quiet Utility</h2></div>
+    <div class="jp">静かな道具 — iOS標準に徹する</div>
+    <span class="tag">実装コスト最小</span>
+    <p class="desc">装飾を足さず、設定アプリと同じ語彙だけで作る案。写真より「タイトルと分類」を読ませるリスト型なので、100件を超えても探し直しが速いです。長く使う道具として一番裏切らない方向。</p>
+    <div class="palette"><i class="sw" style="background:#f2f2f7"></i><i class="sw" style="background:#fff"></i><i class="sw" style="background:#3d4a5c"></i><i class="sw" style="background:#8b8b93"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>44pxサムネのリスト</dd></div><div><dt>書体</dt><dd>SF / ヒラギノ角ゴ</dd></div><div><dt>強み</dt><dd>検索性・可読性</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="top"><div class="brand">ライブラリ</div><div class="btn">＋</div></div>
+      <div class="search">⌕　保存したものを検索</div>
+      <div class="seg"><span class="on">すべて</span><span>未整理</span><span>最近</span></div>
+      <div class="body">
+        <div class="item"><i class="thumb ph1"></i><div class="txt"><div class="ttl">白Tシャツの比較</div><div class="sub">服 · X · 8月18日</div></div><b class="chev">›</b></div>
+        <div class="item"><i class="thumb ph2"></i><div class="txt"><div class="ttl">週末の小旅行の候補</div><div class="sub">旅行 · Instagram · 8月17日</div></div><b class="chev">›</b></div>
+        <div class="item"><i class="thumb ph3"></i><div class="txt"><div class="ttl">夏のリップ3選</div><div class="sub">コスメ · Threads · 8月16日</div></div><b class="chev">›</b></div>
+        <div class="item"><i class="thumb ph4"></i><div class="txt"><div class="ttl">朝食のアイデア</div><div class="sub">食べ物 · Web · 8月15日</div></div><b class="chev">›</b></div>
+        <div class="item"><i class="thumb ph5"></i><div class="txt"><div class="ttl">6畳の模様替え</div><div class="sub">インテリア · Instagram · 8月14日</div></div><b class="chev">›</b></div>
+        <div class="item"><i class="thumb ph6"></i><div class="txt"><div class="ttl">英語の学習法まとめ</div><div class="sub">勉強 · Safari · 8月13日</div></div><b class="chev">›</b></div>
+      </div>
+      <div class="tabs"><span class="on">ライブラリ</span><span>カテゴリ</span><span>設定</span></div>
+    </div></div>
+  </article>
+
+  <!-- 02 -->
+  <article class="prop t02" id="d02">
+    <div class="phead"><span class="num">02</span><h2>Editorial Clipping</h2></div>
+    <div class="jp">雑誌の切り抜き — 明朝と罫線</div>
+    <p class="desc">保存した投稿を「自分だけの雑誌」として綴じる案。明朝体・通し番号・ノド罫でページらしさを出し、先頭の1件だけ大きく特集扱いにします。眺めて楽しむ使い方に強い方向。</p>
+    <div class="palette"><i class="sw" style="background:#faf6ec"></i><i class="sw" style="background:#211d16"></i><i class="sw" style="background:#a4442d"></i><i class="sw" style="background:#c9c0ac"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>特集1件＋番号付きリスト</dd></div><div><dt>書体</dt><dd>ヒラギノ明朝</dd></div><div><dt>強み</dt><dd>見返す楽しさ</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="top"><div class="brand">Tottoku</div><div class="issue">NO.14 — 2026 夏</div></div>
+      <div class="rule"></div>
+      <div class="feature">
+        <i class="thumb ph5"></i>
+        <div class="cap"><span class="n">01</span><div><div class="ttl">6畳をひろく見せる、<br>模様替えの手順</div><em>インテリア / INSTAGRAM</em></div></div>
+      </div>
+      <div class="rule thin"></div>
+      <div class="body">
+        <div class="item"><span class="n">02</span><div class="txt"><div class="ttl">白Tシャツの比較</div><div class="sub">服 / X</div></div><i class="thumb ph1"></i></div>
+        <div class="item"><span class="n">03</span><div class="txt"><div class="ttl">夏のリップ3選</div><div class="sub">コスメ / THREADS</div></div><i class="thumb ph3"></i></div>
+        <div class="item"><span class="n">04</span><div class="txt"><div class="ttl">週末の小旅行の候補</div><div class="sub">旅行 / INSTAGRAM</div></div><i class="thumb ph2"></i></div>
+      </div>
+      <div class="folio">とっとく · 142 件を収録</div>
+    </div></div>
+  </article>
+
+  <!-- 03 -->
+  <article class="prop t03" id="d03">
+    <div class="phead"><span class="num">03</span><h2>Neo-Brutalist Pop</h2></div>
+    <div class="jp">ネオ・ブルータル — 太罫と原色</div>
+    <p class="desc">3pxの黒罫と落ち影で、押した手応えを画面に出す案。蛍光イエローの地に写真が強く乗るので、ホーム画面でもアイコンが埋もれません。個人アプリらしい遊びを一番許容できる方向。</p>
+    <div class="palette"><i class="sw" style="background:#f2ff3d"></i><i class="sw" style="background:#0a0a0a"></i><i class="sw" style="background:#ff3b7f"></i><i class="sw" style="background:#2b39ff"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>2列カード＋帯ラベル</dd></div><div><dt>書体</dt><dd>極太サンセリフ</dd></div><div><dt>強み</dt><dd>記憶に残る個性</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="top"><div class="brand">TOTTOKU</div><div class="btn">+</div></div>
+      <div class="filters"><span class="f on">ALL</span><span class="f">服</span><span class="f">旅行</span><span class="f">コスメ</span></div>
+      <div class="body">
+        <div class="item"><i class="thumb ph1"></i><div class="bar"><div class="ttl">白Tシャツの比較</div><div class="sub">服 — X</div></div></div>
+        <div class="item"><i class="thumb ph2"></i><div class="bar"><div class="ttl">週末の小旅行</div><div class="sub">旅行 — IG</div></div></div>
+        <div class="item"><i class="thumb ph3"></i><div class="bar"><div class="ttl">夏のリップ3選</div><div class="sub">コスメ — THREADS</div></div></div>
+        <div class="item"><i class="thumb ph4"></i><div class="bar"><div class="ttl">朝食のアイデア</div><div class="sub">食べ物 — WEB</div></div></div>
+      </div>
+      <div class="tabs"><span class="on">SAVED</span><span>CATEGORY</span></div>
+    </div></div>
+  </article>
+
+  <!-- 04 -->
+  <article class="prop t04" id="d04">
+    <div class="phead"><span class="num">04</span><h2>Dark Gallery</h2></div>
+    <div class="jp">夜のギャラリー — 写真だけを浮かせる</div>
+    <span class="tag">写真が主役</span>
+    <p class="desc">黒地に写真だけを並べ、文字は9px前後の小さなキャプションに落とす案。カードの枠・影・角丸を全部やめると、スクショやサムネの色がそのまま出ます。夜にベッドで眺める時間に合う方向。</p>
+    <div class="palette"><i class="sw" style="background:#0a0a0c"></i><i class="sw" style="background:#23232a"></i><i class="sw" style="background:#c9a227"></i><i class="sw" style="background:#d6d3c6"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>高さ可変メーソンリー</dd></div><div><dt>書体</dt><dd>字間の広いサンセリフ</dd></div><div><dt>強み</dt><dd>画像の発色・没入感</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="top"><div class="brand">TOTTOKU</div></div>
+      <div class="filters"><span class="on">すべて</span><span>服</span><span>旅行</span><span>コスメ</span></div>
+      <div class="body">
+        <div class="item"><i class="thumb ph3 h1x"></i><div class="cap">夏のリップ3選<em>コスメ</em></div></div>
+        <div class="item"><i class="thumb ph2 h2x"></i><div class="cap">週末の小旅行<em>旅行</em></div></div>
+        <div class="item"><i class="thumb ph5 h3x"></i><div class="cap">6畳の模様替え<em>インテリア</em></div></div>
+        <div class="item"><i class="thumb ph1 h4x"></i><div class="cap">白Tシャツの比較<em>服</em></div></div>
+        <div class="item"><i class="thumb ph6 h2x"></i><div class="cap">英語の学習法<em>勉強</em></div></div>
+        <div class="item"><i class="thumb ph4 h1x"></i><div class="cap">朝食のアイデア<em>食べ物</em></div></div>
+      </div>
+      <div class="fab">＋</div>
+    </div></div>
+  </article>
+
+  <!-- 05 -->
+  <article class="prop t05" id="d05">
+    <div class="phead"><span class="num">05</span><h2>Sticker Book</h2></div>
+    <div class="jp">シール帳 — 貼って集める</div>
+    <p class="desc">カードを白フチ＋少し傾けて、シールを貼ったように見せる案。丸ゴシックと下方向の実体シャドウで、押せる場所がはっきりします。保存が「集める楽しみ」になる方向。</p>
+    <div class="palette"><i class="sw" style="background:#fff2f7"></i><i class="sw" style="background:#ff7fae"></i><i class="sw" style="background:#ffd84d"></i><i class="sw" style="background:#4b3a52"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>傾いた2列カード</dd></div><div><dt>書体</dt><dd>丸ゴシック</dd></div><div><dt>強み</dt><dd>親しみ・タップの楽しさ</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="top"><div class="brand">とっとく</div><div class="btn">＋</div></div>
+      <div class="search">⌕　なにを さがす？</div>
+      <div class="filters"><span class="f on">ぜんぶ</span><span class="f">服</span><span class="f">旅行</span><span class="f">コスメ</span></div>
+      <div class="body">
+        <div class="item"><i class="thumb ph3"></i><b class="badge">♥</b><div class="ttl">夏のリップ3選</div><div class="sub">コスメ · Threads</div></div>
+        <div class="item"><i class="thumb ph1"></i><div class="ttl">白Tシャツの比較</div><div class="sub">服 · X</div></div>
+        <div class="item"><i class="thumb ph4"></i><div class="ttl">朝食のアイデア</div><div class="sub">食べ物 · Web</div></div>
+        <div class="item"><i class="thumb ph2"></i><b class="badge">♥</b><div class="ttl">週末の小旅行</div><div class="sub">旅行 · Instagram</div></div>
+      </div>
+      <div class="tabs"><span class="on">ぜんぶ</span><span>おきにいり</span><span>せってい</span></div>
+    </div></div>
+  </article>
+
+  <!-- 06 -->
+  <article class="prop t06" id="d06">
+    <div class="phead"><span class="num">06</span><h2>Bento Dashboard</h2></div>
+    <div class="jp">ベントー — 集めた量が見える</div>
+    <p class="desc">大小のタイルを詰め合わせ、保存数や今週の伸び、カテゴリの偏りを一緒に見せる案。「溜めているのに見返さない」を数字で崩せます。分類が自動で付くこのアプリと相性のいい方向。</p>
+    <div class="palette"><i class="sw" style="background:#f3f0eb"></i><i class="sw" style="background:#b4552f"></i><i class="sw" style="background:#242019"></i><i class="sw" style="background:#e7e2d9"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>可変スパンのタイル</dd></div><div><dt>書体</dt><dd>サンセリフ＋等幅数字</dd></div><div><dt>強み</dt><dd>全体像の把握</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="top"><div class="brand">tottoku</div><div class="btn">＋</div></div>
+      <div class="body">
+        <div class="item stat"><b>142</b><span>SAVED</span></div>
+        <div class="item stat alt"><b>12</b><span>THIS WEEK</span></div>
+        <div class="item wide img"><i class="thumb ph2"></i><div class="cap"><div class="ttl">週末の小旅行の候補</div><em>旅行 / INSTAGRAM / 8.17</em></div></div>
+        <div class="item sq"><i class="thumb ph1"></i><div class="ttl">白Tシャツの比較</div></div>
+        <div class="item sq"><i class="thumb ph3"></i><div class="ttl">夏のリップ3選</div></div>
+        <div class="item wide bars">
+          <div class="lb"><span>CATEGORY</span><span>TOP 3</span></div>
+          <div class="bar"><i style="width:72%"></i></div>
+          <div class="bar"><i style="width:48%"></i></div>
+          <div class="bar"><i style="width:26%"></i></div>
+        </div>
+      </div>
+      <div class="tabs"><span class="on">LIBRARY</span><span>CATEGORY</span><span>SETTINGS</span></div>
+    </div></div>
+  </article>
+
+  <!-- 07 -->
+  <article class="prop t07" id="d07">
+    <div class="phead"><span class="num">07</span><h2>Washi &amp; Ma</h2></div>
+    <div class="jp">和紙と余白 — 記録として残す</div>
+    <p class="desc">紙の地合いに墨と藍だけを置き、1件を大きな余白で見せる案。縦組みの見出しと落款で、消費ではなく記録の感触になります。件数を追わず、良いものだけ残す使い方に合う方向。</p>
+    <div class="palette"><i class="sw" style="background:#f8f5ee"></i><i class="sw" style="background:#1e1b16"></i><i class="sw" style="background:#2b3a55"></i><i class="sw" style="background:#97392f"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>1列・大余白の記録</dd></div><div><dt>書体</dt><dd>明朝＋広い字間</dd></div><div><dt>強み</dt><dd>落ち着き・所有感</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="side">と っ て お き の 記 録</div>
+      <div class="top"><div class="brand">とっとく</div><div class="sub0">SAVED 142 · 2026.08</div></div>
+      <div class="hair"></div>
+      <div class="body">
+        <div class="item"><div class="txt"><div class="date">八月十八日</div><div class="ttl">白Tシャツの<br>比較</div><div class="cat">服 — X</div></div><i class="thumb ph1"></i></div>
+        <div class="item"><div class="txt"><div class="date">八月十七日</div><div class="ttl">週末の小旅行<br>の候補</div><div class="cat">旅行 — Instagram</div></div><i class="thumb ph2"></i></div>
+        <div class="item"><div class="txt"><div class="date">八月十五日</div><div class="ttl">朝食のアイデア</div><div class="cat">食べ物 — Web</div></div><i class="thumb ph4"></i></div>
+      </div>
+      <div class="foot">す べ て 端 末 の 中 に</div>
+      <div class="seal">好</div>
+    </div></div>
+  </article>
+
+  <!-- 08 -->
+  <article class="prop t08" id="d08">
+    <div class="phead"><span class="num">08</span><h2>Terminal Archive</h2></div>
+    <div class="jp">ターミナル — 検索の速さを見せる</div>
+    <p class="desc">等幅・行指向で、日付とカテゴリとドメインを揃えて出す案。写真を捨てる代わりに1画面の情報量が最大になり、絞り込みがコマンドのように感じられます。オンデバイス処理を美点として押し出す方向。</p>
+    <div class="palette"><i class="sw" style="background:#0c1016"></i><i class="sw" style="background:#7ee787"></i><i class="sw" style="background:#e3b341"></i><i class="sw" style="background:#5c6b7d"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>桁揃えのテキスト行</dd></div><div><dt>書体</dt><dd>SF Mono / 等幅</dd></div><div><dt>強み</dt><dd>情報量・絞り込み速度</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="top"><span>TOTTOKU v1.0</span><span><b>142</b> items · on-device</span></div>
+      <div class="prompt">&gt; find <i>--category=</i>all<span class="caret"></span></div>
+      <div class="head"><span style="flex:0 0 58px">DATE</span><span style="flex:0 0 46px">CAT</span><span style="flex:1">TITLE</span></div>
+      <div class="body">
+        <div class="item"><span class="d">08-18</span><span class="c">[服]</span><span class="n2">白Tシャツの比較</span><span class="s">x.com</span></div>
+        <div class="item"><span class="d">08-17</span><span class="c">[旅行]</span><span class="n2">週末の小旅行の候補</span><span class="s">instagram</span></div>
+        <div class="item"><span class="d">08-16</span><span class="c">[コスメ]</span><span class="n2">夏のリップ3選</span><span class="s">threads</span></div>
+        <div class="item"><span class="d">08-15</span><span class="c">[食]</span><span class="n2">朝食のアイデア</span><span class="s">note.com</span></div>
+        <div class="item"><span class="d">08-14</span><span class="c">[部屋]</span><span class="n2">6畳の模様替え</span><span class="s">instagram</span></div>
+        <div class="item"><span class="d">08-13</span><span class="c">[勉強]</span><span class="n2">英語の学習法まとめ</span><span class="s">safari</span></div>
+        <div class="item"><span class="d">08-12</span><span class="c">[買物]</span><span class="n2">夏物セールの候補</span><span class="s">x.com</span></div>
+        <div class="item"><span class="d">08-11</span><span class="c">[技術]</span><span class="n2">SwiftDataの移行</span><span class="s">apple.com</span></div>
+        <div class="hint">7 / 142 shown · ↑↓ to scroll</div>
+      </div>
+      <div class="tabs"><span class="on">[library]</span><span>[category]</span><span>[inbox]</span></div>
+    </div></div>
+  </article>
+
+  <!-- 09 -->
+  <article class="prop t09" id="d09">
+    <div class="phead"><span class="num">09</span><h2>Liquid Glass</h2></div>
+    <div class="jp">リキッドグラス — iOS 26の質感で</div>
+    <span class="tag">OSと同時代</span>
+    <p class="desc">彩度の高い背景に半透明のガラス層を重ねる、iOS 26以降の質感に寄せた案。操作系は全部フロート、コンテンツだけが下を流れます。今のOSと同じ空気で見せたいときの方向。</p>
+    <div class="palette"><i class="sw" style="background:#2a1a5e"></i><i class="sw" style="background:#ff6fa8"></i><i class="sw" style="background:#57d1ff"></i><i class="sw" style="background:#ffcf6f"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>2列＋ガラスの帯</dd></div><div><dt>書体</dt><dd>SF Rounded寄り</dd></div><div><dt>強み</dt><dd>今らしさ・奥行き</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="top"><div class="brand">とっとく</div><div class="btn">＋</div></div>
+      <div class="search">⌕　保存したものを検索</div>
+      <div class="seg"><span class="on">すべて</span><span>服</span><span>旅行</span><span>コスメ</span></div>
+      <div class="body">
+        <div class="item"><i class="thumb ph2"></i><div class="glass"><div class="ttl">週末の小旅行</div><div class="sub">旅行 · Instagram</div></div></div>
+        <div class="item"><i class="thumb ph3"></i><div class="glass"><div class="ttl">夏のリップ3選</div><div class="sub">コスメ · Threads</div></div></div>
+        <div class="item"><i class="thumb ph1"></i><div class="glass"><div class="ttl">白Tシャツの比較</div><div class="sub">服 · X</div></div></div>
+        <div class="item"><i class="thumb ph5"></i><div class="glass"><div class="ttl">6畳の模様替え</div><div class="sub">インテリア · IG</div></div></div>
+      </div>
+      <div class="tabs"><span class="on">ライブラリ</span><span>カテゴリ</span><span>設定</span></div>
+    </div></div>
+  </article>
+
+  <!-- 10 -->
+  <article class="prop t10" id="d10">
+    <div class="phead"><span class="num">10</span><h2>Risograph Print</h2></div>
+    <div class="jp">リソグラフ — 2色刷りのZINE</div>
+    <p class="desc">蛍光ピンクと青の2版だけで刷った印刷物として組む案。写真はグレースケール＋網点に落とし、版ズレとトンボで手触りを作ります。スクショの雑多な色を1つのトーンに揃えられる方向。</p>
+    <div class="palette"><i class="sw" style="background:#f1ece0"></i><i class="sw" style="background:#ff3d77"></i><i class="sw" style="background:#2b3bff"></i><i class="sw" style="background:#111"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>2列・網点サムネ</dd></div><div><dt>書体</dt><dd>長体の極太サンセリフ</dd></div><div><dt>強み</dt><dd>統一感・作品性</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="regmark"></div>
+      <div class="top"><div class="brand">TOTTOKU</div><div class="btn">＋</div></div>
+      <div class="strip"><span>SAVE</span><span>FIND</span><span>KEEP</span><span>142</span></div>
+      <div class="body">
+        <div class="item"><div class="wrap"><i class="thumb ph1"></i></div><div class="ttl">白Tシャツの比較</div><div class="sub">服 / X</div></div>
+        <div class="item"><div class="wrap b"><i class="thumb ph2"></i></div><div class="ttl">週末の小旅行</div><div class="sub">旅行 / IG</div></div>
+        <div class="item"><div class="wrap b"><i class="thumb ph3"></i></div><div class="ttl">夏のリップ3選</div><div class="sub">コスメ / TH</div></div>
+        <div class="item"><div class="wrap"><i class="thumb ph4"></i></div><div class="ttl">朝食のアイデア</div><div class="sub">食べ物 / WEB</div></div>
+      </div>
+      <div class="tabs"><span class="on">LIBRARY</span><span>CATEGORY</span><span>SETTINGS</span></div>
+    </div></div>
+  </article>
+
+  <!-- 11 -->
+  <article class="prop t11" id="d11">
+    <div class="phead"><span class="num">11</span><h2>FUDGE Issue</h2></div>
+    <div class="jp">フレンチカジュアル誌 — 生成りの紙とキャメル</div>
+    <p class="desc">FUDGEのような大人カジュアル誌の組み方。誌名は英文セリフ、日本語は小さな明朝のキャプションに徹し、写真はセピア寄りのフィルム調に揃えます。1件目を表紙扱いにして、以降を特集ページとして流す案。SNSの雑多な色を1冊のトーンに収める方向。</p>
+    <div class="palette"><i class="sw" style="background:#f7f3ea"></i><i class="sw" style="background:#2f2a24"></i><i class="sw" style="background:#b98a4f"></i><i class="sw" style="background:#a5432c"></i></div>
+    <dl class="specs"><div><dt>一覧</dt><dd>表紙1件＋2列の特集</dd></div><div><dt>書体</dt><dd>英文セリフ＋小さな明朝</dd></div><div><dt>強み</dt><dd>トーンの統一・大人っぽさ</dd></div></dl>
+    <div class="device"><div class="screen">
+      <div class="mast"><span>VOL. 14</span><span>AUG 2026</span></div>
+      <div class="brand">TOTTOKU</div>
+      <div class="kicker">my clipping book</div>
+      <div class="dbl"></div>
+      <div class="hero">
+        <i class="thumb ph1"></i>
+        <div class="plate">
+          <em>a white t-shirt, again.</em>
+          <div class="ttl">白Tシャツの、<br>いちばん良い一枚</div>
+          <div class="sub">STYLE — X / 8.18</div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="sec"><b>THIS MONTH</b><i></i><u>142 CLIPS</u></div>
+        <div class="grid2">
+          <div class="item"><i class="thumb ph2"></i><div class="ttl">週末だけの、<br>小さな旅の候補</div><div class="sub"><b>TRAVEL</b> — INSTAGRAM</div></div>
+          <div class="item"><i class="thumb ph3"></i><div class="ttl">夏のリップ、<br>三つの正解</div><div class="sub"><b>BEAUTY</b> — THREADS</div></div>
+        </div>
+        <div class="idx">
+          <div><span>ROOM</span><em>六畳を広く見せる模様替え</em><b>p.16</b></div>
+          <div><span>FOOD</span><em>朝食のアイデアを集める</em><b>p.18</b></div>
+        </div>
+      </div>
+      <div class="folio"><span>とっとく</span><span>p. 14</span></div>
+      <div class="tabs"><span class="on">LIBRARY</span><span>CATEGORY</span><span>SETTING</span></div>
+    </div></div>
+  </article>
+
+  </section>
+</main>
+</body>
+</html>

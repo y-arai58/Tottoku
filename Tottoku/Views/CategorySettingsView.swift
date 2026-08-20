@@ -11,7 +11,7 @@ struct CategorySettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("表示中") {
+                Section {
                     ForEach(categories.filter { !$0.isArchived }) { category in
                         Button(category.name) {
                             categoryToRename = category
@@ -20,17 +20,26 @@ struct CategorySettingsView: View {
                     }
                     .onDelete(perform: archive)
                     .onMove(perform: move)
+                } header: {
+                    FudgeLabel("in this issue", color: Fudge.camel, size: 8)
                 }
                 let archived = categories.filter(\.isArchived)
                 if !archived.isEmpty {
-                    Section("非表示") {
+                    Section {
                         ForEach(archived) { category in
                             Button(category.name) { category.isArchived = false }
                         }
+                    } header: {
+                        FudgeLabel("archived", color: Fudge.mutedInk, size: 8)
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Fudge.paper)
             .navigationTitle("カテゴリ")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Fudge.paper, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("追加", systemImage: "plus") { isPresentingAddCategory = true }
@@ -51,6 +60,7 @@ struct CategorySettingsView: View {
                 Button("キャンセル", role: .cancel) { categoryToRename = nil }
             }
         }
+        .tint(Fudge.camel)
     }
 
     @State private var newCategoryName = ""
