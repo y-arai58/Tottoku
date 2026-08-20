@@ -62,6 +62,9 @@ enum SharedInboxImporter {
                 continue
             }
             item.recognizedText = recognizedText
+            if item.classificationState != .edited {
+                item.classificationStateRawValue = ClassificationState.pending.rawValue
+            }
             try? modelContext.save()
             recognizedCount += 1
         }
