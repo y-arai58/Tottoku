@@ -8,7 +8,6 @@ enum SharedInboxImporter {
     static func importPendingShares(into modelContext: ModelContext) async -> Int {
         guard let shares = try? SharedInbox.pendingShares() else { return 0 }
         var importedCount = 0
-        var importedItems: [SavedItem] = []
 
         for share in shares {
             let descriptor = FetchDescriptor<SavedItem>(predicate: #Predicate { $0.id == share.id })
@@ -23,23 +22,20 @@ enum SharedInboxImporter {
                 try modelContext.save()
                 try SharedInbox.remove(share)
                 importedCount += 1
-                importedItems.append(item)
             } catch {
                 modelContext.rollback()
             }
         }
 
-        for item in importedItems {
-            await fetchLinkMetadataIfNeeded(for: item, in: modelContext)
-        }
-
         return importedCount
     }
 
-    static func refreshPlaceholderLinkTitles(in modelContext: ModelContext) async -> Int {
+    static func refreshPlaceholderLinkTitles(in modelContext: ModelContext, limit: Int? = nil) async -> Int {
         guard let items = try? modelContext.fetch(FetchDescriptor<SavedItem>()) else { return 0 }
         var updatedCount = 0
-        for item in items {
+        let recentItems = items.sorted { $0.createdAt > $1.createdAt }
+        let itemsToRefresh = limit.map { Array(recentItems.prefix($0)) } ?? recentItems
+        for item in itemsToRefresh {
             if await fetchLinkMetadataIfNeeded(for: item, in: modelContext) {
                 updatedCount += 1
             }
@@ -238,13 +234,17 @@ private struct BookmarkClassification {
 enum SavedItemClassifier {
     static func classifyPendingItems(
         in modelContext: ModelContext,
-        categoryNames: [String]
+        categoryNames: [String],
+        limit: Int? = nil
     ) async -> Int {
         let availableCategories = categoryNames.isEmpty ? CategorySeed.defaults : categoryNames
         guard let items = try? modelContext.fetch(FetchDescriptor<SavedItem>()) else { return 0 }
-        let pendingItems = items.filter { $0.classificationState == .pending }
+        let pendingItems = items
+            .filter { $0.classificationState == .pending }
+            .sorted { $0.createdAt > $1.createdAt }
+        let itemsToClassify = limit.map { Array(pendingItems.prefix($0)) } ?? pendingItems
 
-        for item in pendingItems {
+        for item in itemsToClassify {
             let classification = await classify(item, availableCategories: availableCategories)
             item.categoryName = classification.categoryName
             item.tagNames = classification.tags
@@ -253,7 +253,7 @@ enum SavedItemClassifier {
             try? modelContext.save()
         }
 
-        return pendingItems.count
+        return itemsToClassify.count
     }
 
     private static func classify(

@@ -75,7 +75,7 @@ private struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Query(sort: \Category.order) private var categories: [Category]
     @State private var isImportingSharedPosts = false
-    @State private var hasRefreshedLinkTitles = false
+    @State private var isProcessingLibraryData = false
 
     var body: some View {
         TabView {
@@ -101,11 +101,24 @@ private struct RootView: View {
         isImportingSharedPosts = true
         defer { isImportingSharedPosts = false }
         _ = await SharedInboxImporter.importPendingShares(into: modelContext)
-        if !hasRefreshedLinkTitles {
-            _ = await SharedInboxImporter.refreshPlaceholderLinkTitles(in: modelContext)
-            hasRefreshedLinkTitles = true
-        }
+        scheduleLibraryPostProcessing()
+    }
+
+    private func scheduleLibraryPostProcessing() {
+        guard !isProcessingLibraryData else { return }
+        isProcessingLibraryData = true
         let categoryNames = categories.filter { !$0.isArchived }.map(\.name)
-        _ = await SavedItemClassifier.classifyPendingItems(in: modelContext, categoryNames: categoryNames)
+        Task(priority: .utility) {
+            // Let the library render and accept taps before potentially slow network and AI work starts.
+            await Task.yield()
+            try? await Task.sleep(for: .milliseconds(400))
+            _ = await SharedInboxImporter.refreshPlaceholderLinkTitles(in: modelContext, limit: 3)
+            _ = await SavedItemClassifier.classifyPendingItems(
+                in: modelContext,
+                categoryNames: categoryNames,
+                limit: 3
+            )
+            isProcessingLibraryData = false
+        }
     }
 }
