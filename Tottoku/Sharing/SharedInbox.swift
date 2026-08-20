@@ -22,6 +22,31 @@ enum SharedInbox {
         try encoder.encode(share).write(to: destination, options: .atomic)
     }
 
+    static func enqueueScreenshot(
+        _ imageData: Data,
+        urlString: String?,
+        title: String,
+        text: String = ""
+    ) throws {
+        let id = UUID()
+        let screenshotFileName = "\(id.uuidString).image"
+        let screenshotURL = try screenshotsDirectory().appending(path: screenshotFileName)
+        try imageData.write(to: screenshotURL, options: .atomic)
+
+        do {
+            try enqueue(IncomingShare(
+                id: id,
+                urlString: urlString,
+                title: title,
+                text: text,
+                screenshotFileName: screenshotFileName
+            ))
+        } catch {
+            try? FileManager.default.removeItem(at: screenshotURL)
+            throw error
+        }
+    }
+
     static func inboxDirectory() throws -> URL {
         guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: AppGroupConfiguration.identifier) else {
             throw SharedInboxError.unavailable
@@ -29,6 +54,13 @@ enum SharedInbox {
         let directory = container.appending(path: "IncomingShares", directoryHint: .isDirectory)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         return directory
+    }
+
+    static func screenshotData(for share: IncomingShare) throws -> Data? {
+        guard let screenshotFileName = share.screenshotFileName else { return nil }
+        let fileURL = try screenshotsDirectory().appending(path: screenshotFileName)
+        guard FileManager.default.fileExists(atPath: fileURL.path()) else { return nil }
+        return try Data(contentsOf: fileURL)
     }
 
     static func pendingShares() throws -> [IncomingShare] {
@@ -50,7 +82,21 @@ enum SharedInbox {
 
     static func remove(_ share: IncomingShare) throws {
         let fileURL = try inboxDirectory().appending(path: "\(share.id.uuidString).json")
-        guard FileManager.default.fileExists(atPath: fileURL.path()) else { return }
-        try FileManager.default.removeItem(at: fileURL)
+        if FileManager.default.fileExists(atPath: fileURL.path()) {
+            try FileManager.default.removeItem(at: fileURL)
+        }
+        if let screenshotFileName = share.screenshotFileName {
+            let screenshotURL = try screenshotsDirectory().appending(path: screenshotFileName)
+            try? FileManager.default.removeItem(at: screenshotURL)
+        }
+    }
+
+    private static func screenshotsDirectory() throws -> URL {
+        guard let container = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: AppGroupConfiguration.identifier) else {
+            throw SharedInboxError.unavailable
+        }
+        let directory = container.appending(path: "IncomingScreenshots", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        return directory
     }
 }

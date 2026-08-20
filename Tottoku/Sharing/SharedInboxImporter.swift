@@ -54,12 +54,14 @@ enum SharedInboxImporter {
 
     private static func savedItem(from share: IncomingShare) -> SavedItem {
         let urlString = share.urlString ?? ""
+        let screenshotImageData = try? SharedInbox.screenshotData(for: share)
         return SavedItem(
             id: share.id,
             urlString: urlString,
             source: SavedSource.infer(from: urlString),
             title: title(for: share, urlString: urlString),
             bodyText: share.text.trimmingCharacters(in: .whitespacesAndNewlines),
+            screenshotImageData: screenshotImageData,
             createdAt: share.receivedAt
         )
     }

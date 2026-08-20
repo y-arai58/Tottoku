@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct LibraryView: View {
     @Environment(\.modelContext) private var modelContext
@@ -108,7 +109,14 @@ private struct SavedItemCard: View {
             GeometryReader { proxy in
                 ZStack(alignment: .bottomLeading) {
                     LinearGradient(colors: sourceColors, startPoint: .topLeading, endPoint: .bottomTrailing)
-                    if let url = URL(string: item.thumbnailURLString ?? "") {
+                    if let screenshotData = item.screenshotImageData,
+                              let screenshot = UIImage(data: screenshotData) {
+                        Image(uiImage: screenshot)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: proxy.size.width, height: proxy.size.height)
+                            .clipped()
+                    } else if let url = URL(string: item.thumbnailURLString ?? "") {
                         AsyncImage(url: url) { image in
                             image.resizable().scaledToFill()
                         } placeholder: {
@@ -257,7 +265,14 @@ private struct SavedItemDetailView: View {
     private var preview: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 24).fill(.indigo.gradient)
-            if let url = URL(string: item.thumbnailURLString ?? "") {
+            if let screenshotData = item.screenshotImageData,
+                      let screenshot = UIImage(data: screenshotData) {
+                Image(uiImage: screenshot)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+            } else if let url = URL(string: item.thumbnailURLString ?? "") {
                 AsyncImage(url: url) { image in
                     image.resizable().scaledToFill()
                 } placeholder: {
